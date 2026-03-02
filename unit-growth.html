@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>提升自我 — 個人管理學苑</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper:      #f5f0e8;
+      --paper-dark: #ece7de;
+      --paper-deep: #e4ddd3;
+      --ink:        #1a1612;
+      --ink-light:  #4a4540;
+      --ink-muted:  #8a847c;
+      --red:        #bf3b2b;
+      --border:     #ccc5b8;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Noto Serif TC', serif;
+      min-height: 100vh;
+    }
+
+    /* ─── MASTHEAD ─── */
+    .masthead {
+      border-bottom: 2.5px solid var(--ink);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: stretch;
+    }
+    .mast-brand { padding: 1.8rem 2.5rem; border-right: 1px solid var(--border); }
+    .mast-brand .vol {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem;
+      letter-spacing: 0.22em; color: var(--red); text-transform: uppercase;
+      display: block; margin-bottom: 0.35rem;
+    }
+    .mast-brand h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+    .mast-brand .tagline {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem;
+      color: var(--ink-muted); letter-spacing: 0.07em; margin-top: 0.45rem; display: block;
+    }
+    .mast-rule {
+      background: repeating-linear-gradient(90deg, transparent 0, transparent 6px, var(--border) 6px, var(--border) 7px);
+      margin: 1.5rem 0;
+    }
+    .mast-stats {
+      display: flex; align-items: center; padding: 0 2.5rem;
+      gap: 2.5rem; border-left: 1px solid var(--border);
+    }
+    .stat { text-align: center; }
+    .stat-n { font-family: 'IBM Plex Mono', monospace; font-size: 1.6rem; font-weight: 300; line-height: 1; display: block; }
+    .stat-n em { font-style: normal; font-size: 0.85rem; color: var(--red); }
+    .stat-l { font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem; color: var(--ink-muted); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 0.2rem; display: block; }
+    .stat-divider { width: 1px; height: 2rem; background: var(--border); }
+
+    /* ─── NAV ─── */
+    nav { border-bottom: 1px solid var(--border); display: flex; overflow-x: auto; padding: 0 2rem; }
+    nav a {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.14em;
+      text-transform: uppercase; text-decoration: none; color: var(--ink-light);
+      padding: 0.75rem 1.2rem; border-right: 1px solid var(--border); white-space: nowrap;
+      transition: background .15s, color .15s; flex-shrink: 0;
+    }
+    nav a:first-child { border-left: 1px solid var(--border); }
+    nav a:hover  { background: var(--ink); color: var(--paper); }
+    nav a.active { background: var(--red); color: var(--paper); }
+
+    /* ─── LAYOUT ─── */
+    .wrap { max-width: 1160px; margin: 0 auto; padding: 3rem 2.5rem; }
+
+    /* ─── HERO ─── */
+    .hero { border: 1px solid var(--ink); display: grid; grid-template-columns: 2fr 1fr; margin-bottom: 3.5rem; }
+    .hero-main { padding: 3rem 3rem 2.5rem; border-right: 1px solid var(--border); }
+    .breadcrumb {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em;
+      color: var(--ink-muted); text-transform: uppercase; display: flex; align-items: center;
+      gap: 0.6rem; margin-bottom: 1.2rem;
+    }
+    .breadcrumb a { color: var(--ink-muted); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--red); }
+    .breadcrumb .sep { color: var(--border); }
+    .breadcrumb .cur { color: var(--red); }
+    .hero-main h2 { font-size: 2.8rem; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; margin-bottom: 1.2rem; }
+    .hero-main h2 span { color: var(--red); }
+    .hero-main .lead { font-size: 0.92rem; line-height: 1.95; color: var(--ink-light); font-weight: 300; max-width: 560px; }
+    .hero-meta { display: flex; gap: 2rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); flex-wrap: wrap; }
+    .hm-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem; letter-spacing: 0.16em; color: var(--ink-muted); text-transform: uppercase; display: block; margin-bottom: 0.25rem; }
+    .hm-val { font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; color: var(--ink); }
+    .hero-aside { background: var(--paper-dark); padding: 2.5rem 2rem; display: flex; flex-direction: column; }
+    .aside-lesson { padding: 1rem 0; border-bottom: 1px solid var(--border); display: flex; align-items: baseline; gap: 1rem; }
+    .aside-lesson:first-child { padding-top: 0; }
+    .aside-lesson:last-child { border-bottom: none; padding-bottom: 0; }
+    .al-num { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; color: var(--red); flex-shrink: 0; letter-spacing: 0.1em; }
+    .al-title { font-size: 0.82rem; font-weight: 500; line-height: 1.3; }
+
+    /* ─── SECTION HEADER ─── */
+    .sh { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.8rem; }
+    .sh h3 { font-size: 0.95rem; font-weight: 500; white-space: nowrap; }
+    .sh-line { flex: 1; height: 1px; background: var(--border); }
+    .sh-note { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; color: var(--ink-muted); }
+
+    /* ─── FRAMEWORK ─── */
+    .framework { border: 1px solid var(--ink); margin-bottom: 3.5rem; display: grid; grid-template-columns: repeat(4, 1fr); }
+    .fw-item { padding: 1.8rem 1.6rem; border-right: 1px solid var(--border); }
+    .fw-item:last-child { border-right: none; }
+    .fw-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem; letter-spacing: 0.16em; color: var(--red); text-transform: uppercase; display: block; margin-bottom: 0.5rem; }
+    .fw-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.5rem; line-height: 1.2; }
+    .fw-desc { font-size: 0.78rem; color: var(--ink-light); line-height: 1.7; font-weight: 300; }
+
+    /* ─── CERT DASHBOARD ─── */
+    .cert-board {
+      border: 1px solid var(--ink);
+      margin-bottom: 3.5rem;
+    }
+    .cert-board-header {
+      background: var(--ink); color: var(--paper);
+      padding: 1rem 2rem;
+      display: flex; align-items: baseline; gap: 1.5rem;
+    }
+    .cert-board-header h4 { font-size: 0.88rem; font-weight: 600; }
+    .cert-board-header span { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; color: var(--ink-muted); letter-spacing: 0.1em; }
+    .cert-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto auto;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      gap: 0;
+    }
+    .cert-row:last-child { border-bottom: none; }
+    .cert-status-bar {
+      width: 4px;
+      align-self: stretch;
+    }
+    .cert-status-bar.done    { background: var(--ink); }
+    .cert-status-bar.active  { background: var(--red); }
+    .cert-status-bar.pending { background: var(--border); }
+    .cert-info {
+      padding: 1.4rem 1.8rem;
+      border-right: 1px solid var(--border);
+    }
+    .cert-name {
+      font-size: 0.95rem; font-weight: 600; margin-bottom: 0.25rem; line-height: 1.3;
+    }
+    .cert-org {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem;
+      color: var(--ink-muted); letter-spacing: 0.06em;
+    }
+    .cert-progress-col {
+      padding: 1.4rem 2rem;
+      border-right: 1px solid var(--border);
+      min-width: 180px;
+    }
+    .cert-pct-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 0.4rem;
+    }
+    .cert-pct-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; color: var(--ink-muted); }
+    .cert-pct-num { font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; color: var(--ink); font-weight: 500; }
+    .cert-bar-track { height: 4px; background: var(--border); }
+    .cert-bar-fill  { height: 100%; background: var(--red); transition: width .3s; }
+    .cert-bar-fill.done { background: var(--ink); }
+    .cert-last {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem;
+      color: var(--ink-muted); margin-top: 0.4rem;
+    }
+    .cert-badge-col {
+      padding: 1.4rem 1.6rem;
+      display: flex; align-items: center;
+    }
+    .cert-badge {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.3rem 0.7rem; border: 1px solid;
+    }
+    .cert-badge.done    { border-color: var(--ink);   color: var(--paper); background: var(--ink); }
+    .cert-badge.active  { border-color: var(--red);   color: var(--red); }
+    .cert-badge.pending { border-color: var(--border); color: var(--ink-muted); }
+
+    /* ─── CERT DETAIL CARDS ─── */
+    .cert-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border: 1px solid var(--ink);
+      margin-bottom: 3.5rem;
+    }
+    .cert-card {
+      padding: 2.2rem 2.2rem;
+      border-right: 1px solid var(--border);
+    }
+    .cert-card:last-child { border-right: none; }
+    .cc-tag {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem;
+      letter-spacing: 0.18em; color: var(--red); text-transform: uppercase;
+      display: block; margin-bottom: 0.8rem;
+    }
+    .cc-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.4rem; line-height: 1.3; }
+    .cc-org {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; color: var(--ink-muted);
+      margin-bottom: 1.2rem; display: block;
+    }
+    .cc-divider { height: 1px; background: var(--border); margin-bottom: 1.2rem; }
+    .cc-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding: 0.5rem 0; border-bottom: 1px dashed var(--border);
+    }
+    .cc-row:last-child { border-bottom: none; }
+    .cc-row-label { font-size: 0.78rem; color: var(--ink-muted); font-weight: 300; }
+    .cc-row-val { font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; color: var(--ink); }
+    .cc-row-val.red { color: var(--red); }
+    /* inline progress */
+    .cc-progress-wrap { margin-top: 1.4rem; }
+    .cc-prog-header { display: flex; justify-content: space-between; margin-bottom: 0.4rem; }
+    .cc-prog-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; color: var(--ink-muted); letter-spacing: 0.1em; text-transform: uppercase; }
+    .cc-prog-pct { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--red); font-weight: 500; }
+    .cc-prog-track { height: 6px; background: var(--border); }
+    .cc-prog-fill { height: 100%; background: var(--red); }
+
+    /* ─── GROWTH PYRAMID ─── */
+    .pyramid {
+      border: 1px solid var(--ink);
+      margin-bottom: 3.5rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .pyr-tier {
+      padding: 1.8rem 1.6rem;
+      border-right: 1px solid var(--border);
+    }
+    .pyr-tier:last-child { border-right: none; }
+    .pt-level {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem;
+      letter-spacing: 0.16em; color: var(--red); text-transform: uppercase;
+      display: block; margin-bottom: 0.5rem;
+    }
+    .pt-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .pt-items { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.8rem; }
+    .pt-items li { font-size: 0.78rem; color: var(--ink-light); font-weight: 300; padding-left: 0.9rem; position: relative; line-height: 1.5; }
+    .pt-items li::before { content: '·'; position: absolute; left: 0; color: var(--red); }
+
+    /* ─── PULLQUOTE ─── */
+    .pullquote { border-left: 3px solid var(--red); padding: 1.5rem 2rem; margin: 3.5rem 0; background: var(--paper-dark); }
+    .pullquote blockquote { font-size: 1.25rem; font-weight: 300; line-height: 1.7; color: var(--ink); letter-spacing: 0.01em; margin-bottom: 0.6rem; }
+    .pullquote cite { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; color: var(--ink-muted); letter-spacing: 0.12em; font-style: normal; }
+
+    /* ─── LESSONS ─── */
+    .lesson-block { border: 1px solid var(--ink); margin-bottom: 1.5rem; }
+    .lesson-block:last-of-type { margin-bottom: 3.5rem; }
+    .lesson-header {
+      display: grid; grid-template-columns: auto 1fr auto; align-items: center;
+      border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; transition: background .15s;
+    }
+    .lesson-header:hover { background: var(--paper-dark); }
+    .lh-num {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; letter-spacing: 0.14em;
+      color: var(--paper); background: var(--ink); padding: 1.1rem 1.4rem;
+      border-right: 1px solid var(--border); align-self: stretch; display: flex; align-items: center;
+    }
+    .lesson-block.active .lh-num { background: var(--red); }
+    .lh-info { padding: 1.1rem 1.6rem; }
+    .lh-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.2rem; }
+    .lh-sub { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; color: var(--ink-muted); letter-spacing: 0.06em; }
+    .lh-toggle {
+      padding: 1.1rem 1.6rem; border-left: 1px solid var(--border);
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem;
+      color: var(--ink-muted); display: flex; align-items: center; gap: 0.5rem; white-space: nowrap;
+    }
+    .toggle-arrow { display: inline-block; transition: transform .25s ease; font-style: normal; }
+    .lesson-block.active .toggle-arrow { transform: rotate(90deg); }
+    .lesson-body { display: none; grid-template-columns: 1fr 1fr; }
+    .lesson-block.active .lesson-body { display: grid; }
+    .lb-content { padding: 2rem 2.2rem; border-right: 1px solid var(--border); }
+    .lb-content h4 { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; color: var(--red); text-transform: uppercase; margin-bottom: 0.9rem; }
+    .lb-content p { font-size: 0.86rem; line-height: 1.9; color: var(--ink-light); font-weight: 300; margin-bottom: 1.2rem; }
+    .lb-content p:last-child { margin-bottom: 0; }
+    .lb-points { padding: 2rem 2.2rem; background: var(--paper-dark); }
+    .lb-points h4 { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; color: var(--red); text-transform: uppercase; margin-bottom: 0.9rem; }
+    .point-list { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+    .point-list li { font-size: 0.84rem; line-height: 1.55; color: var(--ink-light); padding-left: 1.2rem; position: relative; font-weight: 300; }
+    .point-list li::before { content: '—'; position: absolute; left: 0; color: var(--red); font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; }
+    .lb-action { grid-column: span 2; border-top: 1px solid var(--border); padding: 1.4rem 2.2rem; display: flex; align-items: center; gap: 1.5rem; }
+    .act-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em; color: var(--red); text-transform: uppercase; flex-shrink: 0; }
+    .act-text { font-size: 0.82rem; color: var(--ink-light); font-weight: 300; line-height: 1.5; flex: 1; }
+    .act-time { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; color: var(--ink-muted); flex-shrink: 0; }
+
+    /* ─── UNIT NAV ─── */
+    .unit-nav { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--ink); margin-bottom: 3.5rem; }
+    .un-prev, .un-next { padding: 1.5rem 2rem; text-decoration: none; color: inherit; display: block; transition: background .15s; }
+    .un-next { border-left: 1px solid var(--border); text-align: right; }
+    .un-prev:hover, .un-next:hover { background: var(--paper-dark); }
+    .un-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem; letter-spacing: 0.18em; color: var(--ink-muted); text-transform: uppercase; display: block; margin-bottom: 0.3rem; }
+    .un-title { font-size: 0.9rem; font-weight: 600; }
+
+    /* ─── FOOTER ─── */
+    footer { border-top: 2px solid var(--ink); padding: 1.2rem 2.5rem; display: flex; justify-content: space-between; align-items: center; }
+    footer span { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; color: var(--ink-muted); letter-spacing: 0.08em; }
+    footer .f-red { color: var(--red); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 860px) {
+      .masthead { grid-template-columns: 1fr; }
+      .mast-rule, .mast-stats { display: none; }
+      .wrap { padding: 2rem 1.4rem; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-main { border-right: none; border-bottom: 1px solid var(--border); padding: 2rem 1.8rem; }
+      .hero-main h2 { font-size: 2rem; }
+      .hero-aside { display: none; }
+      .framework { grid-template-columns: 1fr 1fr; }
+      .fw-item:nth-child(2n) { border-right: none; }
+      .fw-item:nth-child(n+3) { border-top: 1px solid var(--border); }
+      .cert-row { grid-template-columns: auto 1fr auto; }
+      .cert-progress-col { display: none; }
+      .cert-cards { grid-template-columns: 1fr; }
+      .cert-card { border-right: none; border-bottom: 1px solid var(--border); }
+      .cert-card:last-child { border-bottom: none; }
+      .pyramid { grid-template-columns: 1fr; }
+      .pyr-tier { border-right: none; border-bottom: 1px solid var(--border); }
+      .pyr-tier:last-child { border-bottom: none; }
+      .lesson-body { grid-template-columns: 1fr; }
+      .lb-content { border-right: none; border-bottom: 1px solid var(--border); }
+      .lb-action { grid-column: span 1; flex-direction: column; align-items: flex-start; gap: 0.6rem; }
+      .unit-nav { grid-template-columns: 1fr; }
+      .un-next { border-left: none; border-top: 1px solid var(--border); text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── MASTHEAD ─── -->
+<header class="masthead">
+  <div class="mast-brand">
+    <span class="vol">Personal Mgmt. Vol.01</span>
+    <h1>個人管理學苑</h1>
+    <span class="tagline">Time · Life · Reading · Work · Weight · Finance · Growth</span>
+  </div>
+  <div class="mast-rule"></div>
+  <div class="mast-stats">
+    <div class="stat">
+      <span class="stat-n">07<em>模</em></span>
+      <span class="stat-l">提升自我</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-n">06<em>節</em></span>
+      <span class="stat-l">學習單元</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-n">4<em>h</em></span>
+      <span class="stat-l">預估時數</span>
+    </div>
+  </div>
+</header>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <a href="index.html">目錄</a>
+  <a href="unit-time.html">時間管理</a>
+  <a href="unit-life.html">生活管理</a>
+  <a href="unit-reading.html">閱讀管理</a>
+  <a href="unit-work.html">工作管理</a>
+  <a href="unit-weight.html">體重管理</a>
+  <a href="unit-finance.html">理財管理</a>
+  <a href="unit-growth.html" class="active">提升自我</a>
+</nav>
+
+<div class="wrap">
+
+  <!-- ─── HERO ─── -->
+  <section class="hero">
+    <div class="hero-main">
+      <div class="breadcrumb">
+        <a href="index.html">個人管理學苑</a>
+        <span class="sep">/</span>
+        <span class="cur">Module 07</span>
+      </div>
+      <h2>提升自我<br><span>整合成長系統</span></h2>
+      <p class="lead">
+        前六個模組各自是一套工具，這個模組把它們整合成一套完整的人生作業系統。同時，這裡也是你個人成長地圖的核心——從顧客服務到健康管理，從社工師執照到持續精進，記錄你正在走的每一步，並為下一步做好準備。
+      </p>
+      <div class="hero-meta">
+        <div class="hm-item">
+          <span class="hm-label">難度</span>
+          <span class="hm-val">整合應用</span>
+        </div>
+        <div class="hm-item">
+          <span class="hm-label">建議節奏</span>
+          <span class="hm-val">每週 1 節</span>
+        </div>
+        <div class="hm-item">
+          <span class="hm-label">核心工具</span>
+          <span class="hm-val">OKR · 年度回顧 · 個人成長地圖</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-aside">
+      <div class="aside-lesson">
+        <span class="al-num">L01</span>
+        <div class="al-title">個人成長地圖與證照規劃</div>
+      </div>
+      <div class="aside-lesson">
+        <span class="al-num">L02</span>
+        <div class="al-title">顧客服務管理能力認證</div>
+      </div>
+      <div class="aside-lesson">
+        <span class="al-num">L03</span>
+        <div class="al-title">健康管理師認證課程</div>
+      </div>
+      <div class="aside-lesson">
+        <span class="al-num">L04</span>
+        <div class="al-title">OKR 目標設定與季度規劃</div>
+      </div>
+      <div class="aside-lesson">
+        <span class="al-num">L05</span>
+        <div class="al-title">心態建立：成長型思維</div>
+      </div>
+      <div class="aside-lesson">
+        <span class="al-num">L06</span>
+        <div class="al-title">年度覆盤與人生作業系統整合</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── CERT DASHBOARD ─── -->
+  <div class="sh">
+    <h3>證照與認證進度追蹤</h3>
+    <div class="sh-line"></div>
+    <span class="sh-note">個人學習檔案 · 點擊狀態標記可切換完成</span>
+  </div>
+  <div class="cert-board" id="cert-board">
+    <div class="cert-board-header">
+      <h4>My Certifications</h4>
+      <span id="cert-summary">0 已完成 · 3 進行中</span>
+    </div>
+
+    <!-- 社工師 -->
+    <div class="cert-row" id="cert-0">
+      <div class="cert-status-bar active" id="bar-0"></div>
+      <div class="cert-info">
+        <div class="cert-name">社會工作師</div>
+        <div class="cert-org">衛生福利部 · 國家考試</div>
+      </div>
+      <div class="cert-progress-col">
+        <div class="cert-pct-row">
+          <span class="cert-pct-label" id="label-0">狀態</span>
+          <span class="cert-pct-num" id="pct-0">進行中</span>
+        </div>
+        <div class="cert-bar-track"><div class="cert-bar-fill" id="fill-0" style="width:100%"></div></div>
+        <div class="cert-last" id="date-0">考試通過</div>
+      </div>
+      <div class="cert-badge-col">
+        <span class="cert-badge active" id="badge-0" onclick="toggleCert(0)" style="cursor:pointer" title="點擊標記為已完成">進行中</span>
+      </div>
+    </div>
+
+    <!-- 顧客服務 -->
+    <div class="cert-row" id="cert-1">
+      <div class="cert-status-bar active" id="bar-1"></div>
+      <div class="cert-info">
+        <div class="cert-name">初階顧客服務管理專業能力認證</div>
+        <div class="cert-org">IBVE 國際商業職業教育協會</div>
+      </div>
+      <div class="cert-progress-col">
+        <div class="cert-pct-row">
+          <span class="cert-pct-label">完成進度</span>
+          <span class="cert-pct-num" id="pct-1">3%</span>
+        </div>
+        <div class="cert-bar-track"><div class="cert-bar-fill" id="fill-1" style="width:3%"></div></div>
+        <div class="cert-last">上次學習：2026-02-06</div>
+      </div>
+      <div class="cert-badge-col">
+        <span class="cert-badge active" id="badge-1" onclick="toggleCert(1)" style="cursor:pointer" title="點擊標記為已完成">進行中</span>
+      </div>
+    </div>
+
+    <!-- HMCA -->
+    <div class="cert-row" id="cert-2">
+      <div class="cert-status-bar active" id="bar-2"></div>
+      <div class="cert-info">
+        <div class="cert-name">HMCA 國際 C 級健康管理師認證</div>
+        <div class="cert-org">HMCA 國際健康管理照護協會</div>
+      </div>
+      <div class="cert-progress-col">
+        <div class="cert-pct-row">
+          <span class="cert-pct-label">完成進度</span>
+          <span class="cert-pct-num" id="pct-2">34%</span>
+        </div>
+        <div class="cert-bar-track"><div class="cert-bar-fill" id="fill-2" style="width:34%"></div></div>
+        <div class="cert-last">上次學習：2026-02-07</div>
+      </div>
+      <div class="cert-badge-col">
+        <span class="cert-badge active" id="badge-2" onclick="toggleCert(2)" style="cursor:pointer" title="點擊標記為已完成">進行中</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ─── FRAMEWORK ─── -->
+  <div class="sh">
+    <h3>核心觀念框架</h3>
+    <div class="sh-line"></div>
+  </div>
+  <div class="framework">
+    <div class="fw-item">
+      <span class="fw-label">Concept 01</span>
+      <div class="fw-title">成長型思維</div>
+      <p class="fw-desc">能力不是固定的，而是透過努力與策略可以發展的。把挫折看成學習，把挑戰看成機會。</p>
+    </div>
+    <div class="fw-item">
+      <span class="fw-label">Concept 02</span>
+      <div class="fw-title">刻意練習</div>
+      <p class="fw-desc">進步來自在舒適圈邊緣的有目的練習，而非單純的重複。找到弱點，專注突破，獲得即時回饋。</p>
+    </div>
+    <div class="fw-item">
+      <span class="fw-label">Concept 03</span>
+      <div class="fw-title">目標與系統</div>
+      <p class="fw-desc">目標告訴你方向，系統決定你進步的速度。兩者缺一不可，但每日執行的是系統，不是目標。</p>
+    </div>
+    <div class="fw-item">
+      <span class="fw-label">Concept 04</span>
+      <div class="fw-title">覆盤迭代</div>
+      <p class="fw-desc">定期回顧是成長的加速器。沒有覆盤的努力只是重複，有覆盤的努力才是螺旋上升。</p>
+    </div>
+  </div>
+
+  <!-- ─── GROWTH PYRAMID ─── */
+  <div class="sh">
+    <h3>個人成長三層架構</h3>
+    <div class="sh-line"></div>
+    <span class="sh-note">從基礎到整合</span>
+  </div>
+  <div class="pyramid">
+    <div class="pyr-tier">
+      <span class="pt-level">Layer 01 · Foundation</span>
+      <div class="pt-title">基礎能力層</div>
+      <p style="font-size:0.78rem;color:var(--ink-muted);font-weight:300;line-height:1.6;margin-top:0.4rem;">管理自己的核心系統，是一切外部成就的根基。</p>
+      <ul class="pt-items">
+        <li>時間與精力管理</li>
+        <li>生活節律設計</li>
+        <li>身體健康維護</li>
+        <li>財務安全建立</li>
+      </ul>
+    </div>
+    <div class="pyr-tier">
+      <span class="pt-level">Layer 02 · Expertise</span>
+      <div class="pt-title">專業能力層</div>
+      <p style="font-size:0.78rem;color:var(--ink-muted);font-weight:300;line-height:1.6;margin-top:0.4rem;">將知識轉化為可驗證、可應用的專業技能。</p>
+      <ul class="pt-items">
+        <li>社工師執照（已完成）</li>
+        <li>HMCA 健康管理師認證（進行中）</li>
+        <li>初階顧客服務管理認證（進行中）</li>
+        <li>持續閱讀與知識輸出</li>
+      </ul>
+    </div>
+    <div class="pyr-tier">
+      <span class="pt-level">Layer 03 · Integration</span>
+      <div class="pt-title">整合應用層</div>
+      <p style="font-size:0.78rem;color:var(--ink-muted);font-weight:300;line-height:1.6;margin-top:0.4rem;">將各領域能力跨界整合，創造獨特的個人價值。</p>
+      <ul class="pt-items">
+        <li>健康管理 × 社工專業整合</li>
+        <li>服務技能 × 人際溝通應用</li>
+        <li>OKR 目標設定與長期規劃</li>
+        <li>個人品牌與知識輸出</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ─── PULLQUOTE ─── -->
+  <div class="pullquote">
+    <blockquote>「你無法連接向前看的點，只能回頭才能連接它們。所以你必須相信這些點在未來某種程度上會連在一起。」</blockquote>
+    <cite>— Steve Jobs, Stanford Commencement Address, 2005</cite>
+  </div>
+
+  <!-- ─── LESSONS ─── -->
+  <div class="sh">
+    <h3>課程單元</h3>
+    <div class="sh-line"></div>
+    <span class="sh-note">點擊展開內容</span>
+  </div>
+
+  <!-- L01 -->
+  <div class="lesson-block active" id="l01">
+    <div class="lesson-header" onclick="toggleLesson('l01')">
+      <span class="lh-num">L01</span>
+      <div class="lh-info">
+        <div class="lh-title">個人成長地圖與證照規劃</div>
+        <div class="lh-sub">Growth Roadmap · 40 min</div>
+      </div>
+      <div class="lh-toggle">展開 <i class="toggle-arrow">›</i></div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>成長不應該是隨機的，而是有方向感的積累。個人成長地圖是一份描繪「你想成為誰」與「你目前在哪裡」之間路徑的文件，涵蓋知識、技能、證照、人際關係與人生經驗各個面向。</p>
+        <p>本單元帶你繪製自己的成長地圖，以你目前的三張證照為錨點（社工師、健康管理師、顧客服務管理），思考它們如何組合成一個獨特的專業定位，以及未來 1–3 年你想繼續累積的方向。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>個人成長地圖的三個維度：知識深度 / 技能廣度 / 人生經驗</li>
+          <li>以證照為錨點的專業定位分析</li>
+          <li>社工 × 健康管理 × 顧客服務的跨域整合可能性</li>
+          <li>設計未來 3 年的證照與學習路徑</li>
+          <li>區分「想要」的成長與「需要」的成長</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">畫出你的個人成長地圖：列出已有的知識、技能、證照，以及未來 3 年你想增加的能力。思考你的「跨域組合」有什麼獨特之處，寫下一段 100 字的個人專業定位描述。</span>
+        <span class="act-time">作業時間：1.5 小時</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- L02 -->
+  <div class="lesson-block" id="l02">
+    <div class="lesson-header" onclick="toggleLesson('l02')">
+      <span class="lh-num">L02</span>
+      <div class="lh-info">
+        <div class="lh-title">顧客服務管理能力認證</div>
+        <div class="lh-sub">Customer Service Cert · 進行中 3%</div>
+      </div>
+      <div class="lh-toggle">展開 <i class="toggle-arrow">›</i></div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 課程概述</h4>
+        <p>初階顧客服務管理專業能力認證由 IBVE 國際商業職業教育協會開設，獲 ISCA、ACE、NASM、AFAA 等國際機構認可，總計 10 CEUs 學習時數，採線上隨時上線的彈性學習模式。</p>
+        <p>顧客服務能力是跨行業通用的核心軟實力，尤其在社工與健康管理的服務場景中，理解客戶（案主）心理、建立信任關係、處理情緒衝突的能力，將大幅提升你的專業服務品質與影響力。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 學習重點與應用</h4>
+        <ul class="point-list">
+          <li>顧客情緒管理：如何在高壓服務場景中保持穩定</li>
+          <li>積極傾聽技術：讓對方感到被理解的溝通方式</li>
+          <li>投訴處理流程：從衝突到解決的標準化步驟</li>
+          <li>與社工實務的連結：案主服務中的關係建立技巧</li>
+          <li>學習建議：每週安排 1–2 次課程，每次 30–45 分鐘</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本週任務</span>
+        <span class="act-text">本週完成 IBVE 課程平台上至少 2 個單元，並在學習後寫下：這個概念如何應用到你目前的工作或生活中？把學習紀錄加入你的知識庫筆記。</span>
+        <span class="act-time">目標進度：3% → 15%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- L03 -->
+  <div class="lesson-block" id="l03">
+    <div class="lesson-header" onclick="toggleLesson('l03')">
+      <span class="lh-num">L03</span>
+      <div class="lh-info">
+        <div class="lh-title">健康管理師認證課程</div>
+        <div class="lh-sub">HMCA Health Manager Cert · 進行中 34%</div>
+      </div>
+      <div class="lh-toggle">展開 <i class="toggle-arrow">›</i></div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 課程概述</h4>
+        <p>HMCA 國際 C 級健康管理師認證課程由 HMCA 國際健康管理照護協會研發，結合健康科學、營養、心理、預防醫學等多面向知識，目標是培訓具備實務應用能力的健康管理師。目前進度 34%，距離完成仍有一段路，但已建立相當的基礎知識。</p>
+        <p>健康管理師的知識體系與社工師的服務工作高度互補——尤其在老人服務、身心障礙服務、社區健康促進等場域，擁有健康管理的專業視角，能夠為案主提供更全面的服務方案。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 剩餘學習重點</h4>
+        <ul class="point-list">
+          <li>已完成（約 34%）：健康管理基礎概念與健康評估</li>
+          <li>待完成：營養管理與飲食介入方法</li>
+          <li>待完成：運動處方設計與身體活動指導</li>
+          <li>待完成：慢性病預防與健康促進策略</li>
+          <li>待完成：心理健康與壓力管理介入</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本週任務</span>
+        <span class="act-text">本週在 HMCA 課程平台上推進至少 3 個單元，目標把進度從 34% 推進到 40%。學習後用費曼筆記法為一個核心概念寫下「用最簡單語言解釋給非專業者聽」的摘要。</span>
+        <span class="act-time">目標進度：34% → 40%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- L04 -->
+  <div class="lesson-block" id="l04">
+    <div class="lesson-header" onclick="toggleLesson('l04')">
+      <span class="lh-num">L04</span>
+      <div class="lh-info">
+        <div class="lh-title">OKR 目標設定與季度規劃</div>
+        <div class="lh-sub">OKR Planning · 45 min</div>
+      </div>
+      <div class="lh-toggle">展開 <i class="toggle-arrow">›</i></div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>OKR（Objectives and Key Results）是由 Intel 和 Google 等科技公司廣泛採用的目標管理框架，但它同樣適用於個人成長——用明確的「目標」定義你想要什麼，用可衡量的「關鍵結果」確認你是否真的在進步。</p>
+        <p>個人 OKR 的運作週期建議以「季」為單位：每季初設定 2–3 個目標，每個目標搭配 2–3 個具體、可衡量的關鍵結果。季末評分並覆盤，作為下季設定的參考。這個框架能幫你把長期夢想拆解成每季可執行的具體里程碑。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>OKR 的結構：Objective（質性方向）+ Key Results（量性指標）</li>
+          <li>好的 OKR 特徵：激勵性、明確性、可量化、有時限</li>
+          <li>個人 OKR 範例設計（以本課程為情境）</li>
+          <li>OKR vs. SMART 目標：兩種框架的互補使用方式</li>
+          <li>季度中期檢查點：如何在 OKR 偏軌時即時校正</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">為本季度（Q1）設定你的個人 OKR：寫下 2 個目標，每個目標各設定 2–3 個可量化的關鍵結果。其中一個目標建議與你目前進行中的認證課程相關，另一個可涵蓋個人生活或財務面向。</span>
+        <span class="act-time">作業時間：1 小時</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- L05 -->
+  <div class="lesson-block" id="l05">
+    <div class="lesson-header" onclick="toggleLesson('l05')">
+      <span class="lh-num">L05</span>
+      <div class="lh-info">
+        <div class="lh-title">心態建立：成長型思維</div>
+        <div class="lh-sub">Growth Mindset · 40 min</div>
+      </div>
+      <div class="lh-toggle">展開 <i class="toggle-arrow">›</i></div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>Carol Dweck 在《心態致勝》中提出：人對自身能力的信念分為「固定型思維」與「成長型思維」。固定型思維者認為能力是天生固定的，因此害怕挑戰、逃避失敗；成長型思維者相信能力可以透過努力發展，因此把困難視為機會，把失敗視為資訊。</p>
+        <p>成長型思維不是喊口號，而是一套可以練習的思維習慣。本單元帶你識別自己在哪些領域容易陷入固定型思維，並透過具體的認知重構練習，逐步培養更有韌性的成長心態。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>固定型思維 vs. 成長型思維的具體行為差異</li>
+          <li>識別你的固定型思維觸發情境</li>
+          <li>「尚未」的力量：把「我不會」改成「我還不會」</li>
+          <li>刻意練習的四個要素：目標 / 專注 / 回饋 / 突破舒適圈</li>
+          <li>失敗日誌：用記錄失敗來提取學習，而非逃避</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">列出三個你過去曾用「固定型思維」看待的能力或情境（例如「我天生不擅長記東西」）。用成長型思維重新框架這三句話，改成「我目前還沒有找到適合我的記憶方法」。接著為其中一項寫下一個可以立即嘗試的小行動。</span>
+        <span class="act-time">作業時間：30 分鐘</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- L06 -->
+  <div class="lesson-block" id="l06">
+    <div class="lesson-header" onclick="toggleLesson('l06')">
+      <span class="lh-num">L06</span>
+      <div class="lh-info">
+        <div class="lh-title">年度覆盤與人生作業系統整合</div>
+        <div class="lh-sub">Annual Review · 50 min</div>
+      </div>
+      <div class="lh-toggle">展開 <i class="toggle-arrow">›</i></div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>這是整個課程的最終章，也是最重要的一章。你已經學習了七個模組的管理方法，但學習本身不是終點——把這些方法整合成你每天實際執行的「個人作業系統」，才是真正的完成。</p>
+        <p>本單元帶你設計一份年度覆盤模板，以及把七大模組整合成一套可持續運作的個人管理系統的方法。同時，我們也討論如何讓這套系統保持「活著」——不是一次性的完美設計，而是每年持續迭代、適應你的人生變化。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>年度覆盤的八個核心問題（生活、工作、健康、財務、關係、成長、貢獻、未竟之事）</li>
+          <li>七大模組的整合關係圖：時間 → 生活 → 閱讀 → 工作 → 體重 → 理財 → 成長</li>
+          <li>個人作業系統的每日、每週、每月、每季、每年維護節奏</li>
+          <li>如何在系統崩潰後重建（不是從零開始，而是降速重啟）</li>
+          <li>寫下給一年後自己的一封信</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">結業作業</span>
+        <span class="act-text">完成你的「個人管理系統整合圖」：畫出這七個模組在你生活中的實際運作方式，並標記哪些已在執行、哪些還需要建立。最後，寫下一封寄給一年後自己的信，描述你希望那時候的生活是什麼樣子。</span>
+        <span class="act-time">作業時間：2 小時</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── UNIT NAV ─── -->
+  <div class="unit-nav">
+    <a href="unit-finance.html" class="un-prev">
+      <span class="un-label">← 上一模組</span>
+      <div class="un-title">理財管理 · Module 06</div>
+    </a>
+    <a href="index.html" class="un-next">
+      <span class="un-label">返回 →</span>
+      <div class="un-title">課程目錄</div>
+    </a>
+  </div>
+
+</div>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <span>個人管理學苑 &nbsp;·&nbsp; <span class="f-red">Module 07</span> &nbsp;·&nbsp; 提升自我</span>
+  <span>6 Lessons · 4h · 全部 7 模組完成</span>
+</footer>
+
+<script>
+  function toggleLesson(id) {
+    const block = document.getElementById(id);
+    const isActive = block.classList.contains('active');
+    document.querySelectorAll('.lesson-block').forEach(b => b.classList.remove('active'));
+    if (!isActive) block.classList.add('active');
+  }
+
+  // Cert toggle — persists in sessionStorage
+  const certState = [false, false, false];
+
+  function updateSummary() {
+    const doneCount = certState.filter(Boolean).length;
+    const activeCount = certState.length - doneCount;
+    document.getElementById('cert-summary').textContent =
+      doneCount + ' 已完成 · ' + activeCount + ' 進行中';
+  }
+
+  function toggleCert(i) {
+    certState[i] = !certState[i];
+    const isDone = certState[i];
+
+    document.getElementById('bar-' + i).className = 'cert-status-bar ' + (isDone ? 'done' : 'active');
+    document.getElementById('fill-' + i).className = 'cert-bar-fill ' + (isDone ? 'done' : '');
+    const badge = document.getElementById('badge-' + i);
+    badge.className = 'cert-badge ' + (isDone ? 'done' : 'active');
+    badge.textContent = isDone ? '已完成' : '進行中';
+    badge.title = isDone ? '點擊取消標記' : '點擊標記為已完成';
+
+    updateSummary();
+  }
+</script>
+
+</body>
+</html>

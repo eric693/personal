@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>工作管理 — 個人管理學苑</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper:      #f5f0e8;
+      --paper-dark: #ece7de;
+      --paper-deep: #e4ddd3;
+      --ink:        #1a1612;
+      --ink-light:  #4a4540;
+      --ink-muted:  #8a847c;
+      --red:        #bf3b2b;
+      --border:     #ccc5b8;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Noto Serif TC', serif;
+      min-height: 100vh;
+    }
+
+    /* ─── MASTHEAD ─── */
+    .masthead {
+      border-bottom: 2.5px solid var(--ink);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: stretch;
+    }
+    .mast-brand {
+      padding: 1.8rem 2.5rem;
+      border-right: 1px solid var(--border);
+    }
+    .mast-brand .vol {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.22em;
+      color: var(--red);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.35rem;
+    }
+    .mast-brand h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+    .mast-brand .tagline {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--ink-muted);
+      letter-spacing: 0.07em;
+      margin-top: 0.45rem;
+      display: block;
+    }
+    .mast-rule {
+      background: repeating-linear-gradient(
+        90deg,
+        transparent 0, transparent 6px,
+        var(--border) 6px, var(--border) 7px
+      );
+      margin: 1.5rem 0;
+    }
+    .mast-stats {
+      display: flex;
+      align-items: center;
+      padding: 0 2.5rem;
+      gap: 2.5rem;
+      border-left: 1px solid var(--border);
+    }
+    .stat { text-align: center; }
+    .stat-n {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 1.6rem;
+      font-weight: 300;
+      line-height: 1;
+      display: block;
+    }
+    .stat-n em { font-style: normal; font-size: 0.85rem; color: var(--red); }
+    .stat-l {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      color: var(--ink-muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-top: 0.2rem;
+      display: block;
+    }
+    .stat-divider { width: 1px; height: 2rem; background: var(--border); }
+
+    /* ─── NAV ─── */
+    nav {
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      overflow-x: auto;
+      padding: 0 2rem;
+    }
+    nav a {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--ink-light);
+      padding: 0.75rem 1.2rem;
+      border-right: 1px solid var(--border);
+      white-space: nowrap;
+      transition: background .15s, color .15s;
+      flex-shrink: 0;
+    }
+    nav a:first-child { border-left: 1px solid var(--border); }
+    nav a:hover  { background: var(--ink); color: var(--paper); }
+    nav a.active { background: var(--red); color: var(--paper); }
+
+    /* ─── LAYOUT ─── */
+    .wrap {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 3rem 2.5rem;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      border: 1px solid var(--ink);
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      margin-bottom: 3.5rem;
+    }
+    .hero-main {
+      padding: 3rem 3rem 2.5rem;
+      border-right: 1px solid var(--border);
+    }
+    .breadcrumb {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1.2rem;
+    }
+    .breadcrumb a { color: var(--ink-muted); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--red); }
+    .breadcrumb .sep { color: var(--border); }
+    .breadcrumb .cur { color: var(--red); }
+    .hero-main h2 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.15;
+      margin-bottom: 1.2rem;
+    }
+    .hero-main h2 span { color: var(--red); }
+    .hero-main .lead {
+      font-size: 0.92rem;
+      line-height: 1.95;
+      color: var(--ink-light);
+      font-weight: 300;
+      max-width: 560px;
+    }
+    .hero-meta {
+      display: flex;
+      gap: 2rem;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .hm-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.16em;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    .hm-val {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.82rem;
+      color: var(--ink);
+    }
+    .hero-aside {
+      background: var(--paper-dark);
+      padding: 2.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .aside-lesson {
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+    }
+    .aside-lesson:first-child { padding-top: 0; }
+    .aside-lesson:last-child { border-bottom: none; padding-bottom: 0; }
+    .al-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--red);
+      flex-shrink: 0;
+      letter-spacing: 0.1em;
+    }
+    .al-title { font-size: 0.82rem; font-weight: 500; line-height: 1.3; }
+
+    /* ─── SECTION HEADER ─── */
+    .sh {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.8rem;
+    }
+    .sh h3 { font-size: 0.95rem; font-weight: 500; white-space: nowrap; }
+    .sh-line { flex: 1; height: 1px; background: var(--border); }
+    .sh-note {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--ink-muted);
+    }
+
+    /* ─── FRAMEWORK ─── */
+    .framework {
+      border: 1px solid var(--ink);
+      margin-bottom: 3.5rem;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .fw-item {
+      padding: 1.8rem 1.6rem;
+      border-right: 1px solid var(--border);
+    }
+    .fw-item:last-child { border-right: none; }
+    .fw-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.16em;
+      color: var(--red);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    .fw-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.5rem; line-height: 1.2; }
+    .fw-desc { font-size: 0.78rem; color: var(--ink-light); line-height: 1.7; font-weight: 300; }
+
+    /* ─── GTD FLOW ─── */
+    .gtd-flow {
+      border: 1px solid var(--ink);
+      margin-bottom: 3.5rem;
+    }
+    .gtd-header {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: baseline;
+      gap: 1.5rem;
+    }
+    .gtd-header h4 {
+      font-size: 0.88rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .gtd-header span {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--ink-muted);
+      letter-spacing: 0.1em;
+    }
+    .gtd-steps {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+    }
+    .gtd-step {
+      padding: 1.6rem 1.4rem;
+      border-right: 1px solid var(--border);
+    }
+    .gtd-step:last-child { border-right: none; }
+    .gs-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 1.8rem;
+      font-weight: 300;
+      color: var(--paper-deep);
+      line-height: 1;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    .gs-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      color: var(--red);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+    .gs-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .gs-desc { font-size: 0.76rem; color: var(--ink-light); line-height: 1.65; font-weight: 300; }
+
+    /* ─── INBOX ZERO TABLE ─── */
+    .inbox-table {
+      border: 1px solid var(--ink);
+      margin-bottom: 3.5rem;
+    }
+    .it-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr 2fr;
+      background: var(--paper-dark);
+      border-bottom: 1px solid var(--border);
+    }
+    .it-header span {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.16em;
+      color: var(--red);
+      text-transform: uppercase;
+      padding: 0.8rem 1.4rem;
+      border-right: 1px solid var(--border);
+    }
+    .it-header span:last-child { border-right: none; }
+    .it-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 2fr;
+      border-bottom: 1px solid var(--border);
+    }
+    .it-row:last-child { border-bottom: none; }
+    .it-cell {
+      padding: 1rem 1.4rem;
+      border-right: 1px solid var(--border);
+      font-size: 0.82rem;
+      font-weight: 300;
+      color: var(--ink-light);
+      line-height: 1.5;
+    }
+    .it-cell:last-child { border-right: none; }
+    .it-cell.bold { font-weight: 600; color: var(--ink); }
+    .it-cell .tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      padding: 0.15rem 0.45rem;
+      background: var(--red);
+      color: var(--paper);
+      display: inline-block;
+      letter-spacing: 0.08em;
+    }
+    .it-cell .tag.light {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--ink-muted);
+    }
+
+    /* ─── PULLQUOTE ─── */
+    .pullquote {
+      border-left: 3px solid var(--red);
+      padding: 1.5rem 2rem;
+      margin: 3.5rem 0;
+      background: var(--paper-dark);
+    }
+    .pullquote blockquote {
+      font-size: 1.25rem;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--ink);
+      letter-spacing: 0.01em;
+      margin-bottom: 0.6rem;
+    }
+    .pullquote cite {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--ink-muted);
+      letter-spacing: 0.12em;
+      font-style: normal;
+    }
+
+    /* ─── LESSONS ─── */
+    .lesson-block {
+      border: 1px solid var(--ink);
+      margin-bottom: 1.5rem;
+    }
+    .lesson-block:last-of-type { margin-bottom: 3.5rem; }
+    .lesson-header {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+      transition: background .15s;
+    }
+    .lesson-header:hover { background: var(--paper-dark); }
+    .lh-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      color: var(--paper);
+      background: var(--ink);
+      padding: 1.1rem 1.4rem;
+      border-right: 1px solid var(--border);
+      align-self: stretch;
+      display: flex;
+      align-items: center;
+    }
+    .lesson-block.active .lh-num { background: var(--red); }
+    .lh-info { padding: 1.1rem 1.6rem; }
+    .lh-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.2rem; }
+    .lh-sub {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--ink-muted);
+      letter-spacing: 0.06em;
+    }
+    .lh-toggle {
+      padding: 1.1rem 1.6rem;
+      border-left: 1px solid var(--border);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--ink-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+    }
+    .toggle-arrow { display: inline-block; transition: transform .25s ease; font-style: normal; }
+    .lesson-block.active .toggle-arrow { transform: rotate(90deg); }
+    .lesson-body { display: none; grid-template-columns: 1fr 1fr; }
+    .lesson-block.active .lesson-body { display: grid; }
+    .lb-content { padding: 2rem 2.2rem; border-right: 1px solid var(--border); }
+    .lb-content h4 {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--red);
+      text-transform: uppercase;
+      margin-bottom: 0.9rem;
+    }
+    .lb-content p {
+      font-size: 0.86rem;
+      line-height: 1.9;
+      color: var(--ink-light);
+      font-weight: 300;
+      margin-bottom: 1.2rem;
+    }
+    .lb-content p:last-child { margin-bottom: 0; }
+    .lb-points { padding: 2rem 2.2rem; background: var(--paper-dark); }
+    .lb-points h4 {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--red);
+      text-transform: uppercase;
+      margin-bottom: 0.9rem;
+    }
+    .point-list { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+    .point-list li {
+      font-size: 0.84rem;
+      line-height: 1.55;
+      color: var(--ink-light);
+      padding-left: 1.2rem;
+      position: relative;
+      font-weight: 300;
+    }
+    .point-list li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--red);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.75rem;
+    }
+    .lb-action {
+      grid-column: span 2;
+      border-top: 1px solid var(--border);
+      padding: 1.4rem 2.2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .lb-action .act-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      color: var(--red);
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+    .lb-action .act-text {
+      font-size: 0.82rem;
+      color: var(--ink-light);
+      font-weight: 300;
+      line-height: 1.5;
+      flex: 1;
+    }
+    .lb-action .act-time {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--ink-muted);
+      flex-shrink: 0;
+    }
+
+    /* ─── UNIT NAV ─── */
+    .unit-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1px solid var(--ink);
+      margin-bottom: 3.5rem;
+    }
+    .un-prev, .un-next {
+      padding: 1.5rem 2rem;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: background .15s;
+    }
+    .un-next { border-left: 1px solid var(--border); text-align: right; }
+    .un-prev:hover, .un-next:hover { background: var(--paper-dark); }
+    .un-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+    .un-title { font-size: 0.9rem; font-weight: 600; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 2px solid var(--ink);
+      padding: 1.2rem 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    footer span {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--ink-muted);
+      letter-spacing: 0.08em;
+    }
+    footer .f-red { color: var(--red); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 860px) {
+      .masthead { grid-template-columns: 1fr; }
+      .mast-rule, .mast-stats { display: none; }
+      .wrap { padding: 2rem 1.4rem; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-main { border-right: none; border-bottom: 1px solid var(--border); padding: 2rem 1.8rem; }
+      .hero-main h2 { font-size: 2rem; }
+      .hero-aside { display: none; }
+      .framework { grid-template-columns: 1fr 1fr; }
+      .fw-item:nth-child(2n) { border-right: none; }
+      .fw-item:nth-child(n+3) { border-top: 1px solid var(--border); }
+      .gtd-steps { grid-template-columns: 1fr 1fr; }
+      .gtd-step:nth-child(2n) { border-right: none; }
+      .gtd-step:nth-child(n+3) { border-top: 1px solid var(--border); }
+      .it-header, .it-row { grid-template-columns: 1fr 1fr; }
+      .it-header span:last-child, .it-cell:last-child { display: none; }
+      .lesson-body { grid-template-columns: 1fr; }
+      .lb-content { border-right: none; border-bottom: 1px solid var(--border); }
+      .lb-action { grid-column: span 1; flex-direction: column; align-items: flex-start; gap: 0.6rem; }
+      .unit-nav { grid-template-columns: 1fr; }
+      .un-next { border-left: none; border-top: 1px solid var(--border); text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── MASTHEAD ─── -->
+<header class="masthead">
+  <div class="mast-brand">
+    <span class="vol">Personal Mgmt. Vol.01</span>
+    <h1>個人管理學苑</h1>
+    <span class="tagline">Time · Life · Reading · Work · Weight · Finance · Growth</span>
+  </div>
+  <div class="mast-rule"></div>
+  <div class="mast-stats">
+    <div class="stat">
+      <span class="stat-n">04<em>模</em></span>
+      <span class="stat-l">工作管理</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-n">06<em>節</em></span>
+      <span class="stat-l">學習單元</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-n">4<em>h</em></span>
+      <span class="stat-l">預估時數</span>
+    </div>
+  </div>
+</header>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <a href="index.html">目錄</a>
+  <a href="unit-time.html">時間管理</a>
+  <a href="unit-life.html">生活管理</a>
+  <a href="unit-reading.html">閱讀管理</a>
+  <a href="unit-work.html" class="active">工作管理</a>
+  <a href="unit-weight.html">體重管理</a>
+  <a href="unit-finance.html">理財管理</a>
+  <a href="unit-growth.html">提升自我</a>
+</nav>
+
+<div class="wrap">
+
+  <!-- ─── HERO ─── -->
+  <section class="hero">
+    <div class="hero-main">
+      <div class="breadcrumb">
+        <a href="index.html">個人管理學苑</a>
+        <span class="sep">/</span>
+        <span class="cur">Module 04</span>
+      </div>
+      <h2>工作管理<br><span>效能系統建立</span></h2>
+      <p class="lead">
+        忙是一種感覺，完成才是事實。許多人每天從早忙到晚，卻在夜晚回顧時發現真正重要的事沒有推進。工作管理不是讓你做更多事，而是確保你在做對的事——建立一套從任務捕捉、整理、執行到收尾的可靠系統，讓大腦從記憶的重擔中解放出來。
+      </p>
+      <div class="hero-meta">
+        <div class="hm-item">
+          <span class="hm-label">難度</span>
+          <span class="hm-val">中級</span>
+        </div>
+        <div class="hm-item">
+          <span class="hm-label">建議節奏</span>
+          <span class="hm-val">每週 1 節</span>
+        </div>
+        <div class="hm-item">
+          <span class="hm-label">核心工具</span>
+          <span class="hm-val">GTD 收件匣 · 任務清單 · 專案看板</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-aside">
+      <div class="aside-lesson">
+        <span class="al-num">L01</span>
+        <div class="al-title">工作現況診斷：哪裡在漏水？</div>
+      </div>
+      <div class="aside-lesson">
+        <span class="al-num">L02</span>
+        <div class="al-title">GTD 系統：從捕捉到清零</div>
+      </div>
+      <div class="aside-lesson">
+        <span class="al-num">L03</span>
+        <div class="al-title">任務拆解與下一步行動</div>
+      </div>
+      <div class="aside-lesson">
+        <span class="al-num">L04</span>
+        <div class="al-title">專案管理與進度追蹤</div>
+      </div>
+      <div class="aside-lesson">
+        <span class="al-num">L05</span>
+        <div class="al-title">溝通與會議效率</div>
+      </div>
+      <div class="aside-lesson">
+        <span class="al-num">L06</span>
+        <div class="al-title">工作收尾與日終覆盤</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FRAMEWORK ─── -->
+  <div class="sh">
+    <h3>核心觀念框架</h3>
+    <div class="sh-line"></div>
+  </div>
+  <div class="framework">
+    <div class="fw-item">
+      <span class="fw-label">Concept 01</span>
+      <div class="fw-title">外部化思考</div>
+      <p class="fw-desc">大腦是用來思考的，不是用來記憶的。把所有任務、想法、承諾移出大腦，放進可信賴的系統。</p>
+    </div>
+    <div class="fw-item">
+      <span class="fw-label">Concept 02</span>
+      <div class="fw-title">下一步行動</div>
+      <p class="fw-desc">拖延的根本原因常是任務不夠具體。把每件事定義成可立即執行的「下一步」，消除啟動阻力。</p>
+    </div>
+    <div class="fw-item">
+      <span class="fw-label">Concept 03</span>
+      <div class="fw-title">情境批次</div>
+      <p class="fw-desc">相似性質的任務放在同一時段批次處理，減少切換成本，維持穩定的工作節律。</p>
+    </div>
+    <div class="fw-item">
+      <span class="fw-label">Concept 04</span>
+      <div class="fw-title">每週回顧</div>
+      <p class="fw-desc">系統需要定期維護。每週固定一次回顧，確保所有任務都在追蹤中、沒有遺漏。</p>
+    </div>
+  </div>
+
+  <!-- ─── GTD FLOW ─── -->
+  <div class="sh">
+    <h3>GTD 工作流程</h3>
+    <div class="sh-line"></div>
+    <span class="sh-note">Getting Things Done · David Allen</span>
+  </div>
+  <div class="gtd-flow">
+    <div class="gtd-header">
+      <h4>捕捉一切 → 釐清意義 → 組織分類 → 定期回顧 → 付諸行動</h4>
+      <span>GTD 五步驟工作流</span>
+    </div>
+    <div class="gtd-steps">
+      <div class="gtd-step">
+        <span class="gs-num">01</span>
+        <span class="gs-label">Capture</span>
+        <div class="gs-title">捕捉</div>
+        <p class="gs-desc">把所有進入腦中的事情立刻記下來，不管大小——念頭、任務、承諾、想法，全部進收件匣。</p>
+      </div>
+      <div class="gtd-step">
+        <span class="gs-num">02</span>
+        <span class="gs-label">Clarify</span>
+        <div class="gs-title">釐清</div>
+        <p class="gs-desc">逐一處理收件匣中的每個項目：這是什麼？需要採取行動嗎？下一步是什麼？</p>
+      </div>
+      <div class="gtd-step">
+        <span class="gs-num">03</span>
+        <span class="gs-label">Organize</span>
+        <div class="gs-title">組織</div>
+        <p class="gs-desc">把釐清後的項目放進對應清單：下一步行動、等待清單、將來也許、專案清單、參考資料。</p>
+      </div>
+      <div class="gtd-step">
+        <span class="gs-num">04</span>
+        <span class="gs-label">Reflect</span>
+        <div class="gs-title">回顧</div>
+        <p class="gs-desc">每日快速瀏覽行動清單；每週完整回顧所有清單，確保系統保持最新、可信賴。</p>
+      </div>
+      <div class="gtd-step">
+        <span class="gs-num">05</span>
+        <span class="gs-label">Engage</span>
+        <div class="gs-title">執行</div>
+        <p class="gs-desc">根據當下的情境、時間、精力與優先序，選擇最適合此刻執行的任務，專注完成。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── PULLQUOTE ─── */
+  <div class="pullquote">
+    <blockquote>「你的心智是用來產生想法的，不是用來保存想法的。」</blockquote>
+    <cite>— David Allen, Getting Things Done</cite>
+  </div>
+
+  <!-- ─── INBOX DECISION TABLE ─── -->
+  <div class="sh">
+    <h3>收件匣決策表</h3>
+    <div class="sh-line"></div>
+    <span class="sh-note">每個進入收件匣的項目，都要做出明確決定</span>
+  </div>
+  <div class="inbox-table">
+    <div class="it-header">
+      <span>情況判斷</span>
+      <span>處理方式</span>
+      <span>說明</span>
+    </div>
+    <div class="it-row">
+      <div class="it-cell bold">不需要行動</div>
+      <div class="it-cell"><span class="tag light">刪除 / 封存</span></div>
+      <div class="it-cell">垃圾資訊直接刪除；有參考價值的資料移到參考資料庫。</div>
+    </div>
+    <div class="it-row">
+      <div class="it-cell bold">需要行動，2 分鐘內可完成</div>
+      <div class="it-cell"><span class="tag">立即執行</span></div>
+      <div class="it-cell">現在就做。把小事放進清單管理的時間成本大於直接完成。</div>
+    </div>
+    <div class="it-row">
+      <div class="it-cell bold">需要行動，需要時間</div>
+      <div class="it-cell"><span class="tag light">加入行動清單</span></div>
+      <div class="it-cell">寫下具體的「下一步行動」，加入對應的專案或情境清單。</div>
+    </div>
+    <div class="it-row">
+      <div class="it-cell bold">需要行動，但要等別人</div>
+      <div class="it-cell"><span class="tag light">等待清單</span></div>
+      <div class="it-cell">記錄你在等誰的什麼，以及發出請求的日期，定期追蹤。</div>
+    </div>
+    <div class="it-row">
+      <div class="it-cell bold">有趣但目前非優先</div>
+      <div class="it-cell"><span class="tag light">將來也許清單</span></div>
+      <div class="it-cell">不要讓「將來也許」佔據行動清單，但也不要直接丟棄。</div>
+    </div>
+  </div>
+
+  <!-- ─── LESSONS ─── -->
+  <div class="sh">
+    <h3>課程單元</h3>
+    <div class="sh-line"></div>
+    <span class="sh-note">點擊展開內容</span>
+  </div>
+
+  <!-- L01 -->
+  <div class="lesson-block active" id="l01">
+    <div class="lesson-header" onclick="toggleLesson('l01')">
+      <span class="lh-num">L01</span>
+      <div class="lh-info">
+        <div class="lh-title">工作現況診斷：哪裡在漏水？</div>
+        <div class="lh-sub">Work Audit · 40 min</div>
+      </div>
+      <div class="lh-toggle">展開 <i class="toggle-arrow">›</i></div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>在改善工作效能之前，先誠實地找出你的系統漏洞。你的任務散落在幾個地方？你有多少件事「答應要做但還沒做」？你上一次整理待辦清單是什麼時候？你的電子郵件收件匣有幾封未讀？</p>
+        <p>這些問題的答案揭示了你的工作系統中最脆弱的環節。本單元透過一份「工作效能診斷問卷」，幫你找出最需要優先修補的三個漏洞，並確立本模組學習結束後你要建立的目標系統樣貌。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>工作系統五大漏洞：任務散落 / 沒有下一步 / 收件匣爆炸 / 缺乏回顧 / 任務混雜</li>
+          <li>「開放迴路」診斷：列出所有你承諾但未完成的事</li>
+          <li>計算你目前的任務分散程度（用幾個地方管理任務？）</li>
+          <li>找出你最常被打斷、分心或拖延的情境</li>
+          <li>設定本模組結束後的工作系統目標</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">花 45 分鐘做「大腦清空」練習：把你腦中所有的開放迴路——未完成的事、承諾、擔憂、想做的事——全部寫在紙上，不加分類，只是清空。統計數量，找出最讓你有壓力感的前五項。</span>
+        <span class="act-time">作業時間：45 分鐘</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- L02 -->
+  <div class="lesson-block" id="l02">
+    <div class="lesson-header" onclick="toggleLesson('l02')">
+      <span class="lh-num">L02</span>
+      <div class="lh-info">
+        <div class="lh-title">GTD 系統：從捕捉到清零</div>
+        <div class="lh-sub">GTD Setup · 50 min</div>
+      </div>
+      <div class="lh-toggle">展開 <i class="toggle-arrow">›</i></div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>GTD（Getting Things Done）是由 David Allen 提出的工作管理方法論，核心思想是：把所有承諾和任務移出大腦，放進一套可信賴的外部系統，讓大腦專注於當下的工作而非記憶維護。</p>
+        <p>本單元帶你從零開始建立 GTD 系統的基礎架構：設定統一的收件匣（Inbox）、建立基本清單結構，並完成你的第一次完整收件匣清零（Inbox Zero）。這是整個工作管理系統最重要的起點。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>建立統一捕捉入口：實體收件匣 + 數位收件匣（最多 3 個）</li>
+          <li>GTD 五大清單：下一步行動 / 專案 / 等待 / 將來也許 / 參考資料</li>
+          <li>2 分鐘法則：可以立刻完成的事，現在就做</li>
+          <li>第一次完整收件匣清零的操作流程</li>
+          <li>工具選擇：Things 3 / Todoist / Notion / 紙本的各自適用情境</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">選定你的任務管理工具，建立 GTD 五大清單結構。接著執行第一次收件匣清零：處理所有電子郵件、即時訊息、紙條、便利貼，將每個項目歸入對應清單或立即執行。</span>
+        <span class="act-time">作業時間：2–3 小時（首次設定）</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- L03 -->
+  <div class="lesson-block" id="l03">
+    <div class="lesson-header" onclick="toggleLesson('l03')">
+      <span class="lh-num">L03</span>
+      <div class="lh-info">
+        <div class="lh-title">任務拆解與下一步行動</div>
+        <div class="lh-sub">Task Breakdown · 40 min</div>
+      </div>
+      <div class="lh-toggle">展開 <i class="toggle-arrow">›</i></div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>「寫完報告」不是一個任務，它是一個專案。拖延的核心原因之一，就是任務太模糊、太龐大，讓大腦不知道從哪裡開始，於是選擇迴避。把任務拆解成具體、可立即執行的「下一步行動」，是消除啟動阻力最有效的方法。</p>
+        <p>本單元教你如何識別哪些項目是專案（需要多個步驟才能完成），如何把每個專案拆解成清晰的行動序列，以及如何用「情境標籤」讓你在不同場合能快速找到適合此刻執行的任務。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>任務 vs. 專案的區分標準：需要超過一個步驟的都是專案</li>
+          <li>下一步行動的寫法：動詞開頭 + 具體描述（「寄信給王經理確認時間」而非「聯絡王經理」）</li>
+          <li>專案拆解的逆向工作法（Backward Planning）</li>
+          <li>情境標籤系統：@電話 / @電腦 / @外出 / @等待 / @15分鐘內</li>
+          <li>大型任務的「下一步清單」管理</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">從你的任務清單中找出三個「太模糊」或「太龐大」的項目，將它們拆解成具體的下一步行動序列。為每個下一步行動加上情境標籤，確認你能夠在不需要額外思考的情況下直接開始執行。</span>
+        <span class="act-time">作業時間：45 分鐘</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- L04 -->
+  <div class="lesson-block" id="l04">
+    <div class="lesson-header" onclick="toggleLesson('l04')">
+      <span class="lh-num">L04</span>
+      <div class="lh-info">
+        <div class="lh-title">專案管理與進度追蹤</div>
+        <div class="lh-sub">Project Tracking · 45 min</div>
+      </div>
+      <div class="lh-toggle">展開 <i class="toggle-arrow">›</i></div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>個人的「專案」不需要複雜的甘特圖，但需要一個清晰的追蹤結構。一個專案至少需要：明確的完成定義、當前的下一步行動、以及一個定期檢視的時間點。沒有這三個要素，專案就會慢慢消失在清單的底部，成為永遠的「重要但不緊急」。</p>
+        <p>本單元介紹適合個人使用的輕量級專案管理方法，包含看板（Kanban）的簡化版本、OKR 目標設定框架在個人層面的應用，以及如何追蹤多個同時進行的專案而不感到失控。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>個人專案清單的標準格式：名稱 / 完成標準 / 截止日 / 下一步</li>
+          <li>簡化看板：待辦 → 進行中（最多 3 項）→ 等待 → 完成</li>
+          <li>WIP 限制（Work In Progress）：同時進行的事不超過三件</li>
+          <li>個人 OKR：設定季度目標與關鍵成果</li>
+          <li>每週專案回顧：確認每個活躍專案都有下一步行動</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">列出你目前所有的「活躍專案」（包含工作和個人）。為每個專案填入：完成標準、預計完成日期、目前的下一步行動。找出哪些專案已經停滯（沒有下一步行動），為它們各設定一個具體的重啟步驟。</span>
+        <span class="act-time">作業時間：1 小時</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- L05 -->
+  <div class="lesson-block" id="l05">
+    <div class="lesson-header" onclick="toggleLesson('l05')">
+      <span class="lh-num">L05</span>
+      <div class="lh-info">
+        <div class="lh-title">溝通與會議效率</div>
+        <div class="lh-sub">Communication & Meetings · 40 min</div>
+      </div>
+      <div class="lh-toggle">展開 <i class="toggle-arrow">›</i></div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>溝通是工作中最大的時間消耗之一，但也是最少被有意識管理的部分。無效的會議、散漫的訊息往來、不清晰的請求與回覆——這些都是工作時間的隱形殺手。</p>
+        <p>本單元從兩個面向切入：首先是非同步溝通的技巧，讓你的每一封郵件和訊息都清晰、完整、讓對方一次就能回覆；其次是會議管理，包含如何判斷一個會議是否有必要，以及如何讓你主導的會議有效收尾並產出明確的行動項目。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>非同步優先原則：能用文字解決的，不要開會</li>
+          <li>清晰郵件寫作：主旨 + 背景 + 請求 + 截止日，一次到位</li>
+          <li>批次處理訊息：設定固定的郵件回覆時段，而非即時回覆</li>
+          <li>會議的三個前提：目標明確 / 必要出席者到場 / 有議程</li>
+          <li>會議結尾必做：確認行動項目、負責人、截止日期</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">本週設定兩個固定的「郵件回覆時段」（如上午 10 點和下午 4 點），其餘時間關閉郵件通知。記錄這樣的改變對工作流的影響。同時，審視本週所有會議：哪些可以取消、縮短，或改為非同步溝通？</span>
+        <span class="act-time">作業時間：1 週實驗</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- L06 -->
+  <div class="lesson-block" id="l06">
+    <div class="lesson-header" onclick="toggleLesson('l06')">
+      <span class="lh-num">L06</span>
+      <div class="lh-info">
+        <div class="lh-title">工作收尾與日終覆盤</div>
+        <div class="lh-sub">Daily Shutdown · 35 min</div>
+      </div>
+      <div class="lh-toggle">展開 <i class="toggle-arrow">›</i></div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>如果說晨間例程是為一天建立良好開端，日終收尾儀式（Shutdown Ritual）則是讓工作真正「下班」的關鍵。沒有明確結束工作的儀式，大腦很難真正離開工作模式——你會在吃晚飯時想到那封還沒回的郵件，在睡前掛念著明天的會議。</p>
+        <p>Cal Newport 稱這個儀式為「計畫完整覆盤（Complete Shutdown）」。本單元設計一套可在 15–20 分鐘內完成的日終收尾流程，讓你每天以清晰、有條理的狀態結束工作，並對明天充滿把握。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>日終收尾的五個步驟：掃描 / 更新 / 確認 / 計畫 / 宣告</li>
+          <li>「計畫完整覆盤」的完整執行流程（Cal Newport 版本）</li>
+          <li>如何在日終前確認所有開放迴路都有下一步</li>
+          <li>設計個人的「收工咒語」：讓大腦知道工作已結束</li>
+          <li>日終覆盤的三問：今天完成什麼？遇到什麼阻礙？明天最重要的一件事？</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">設計你的「日終收尾流程」，寫成一份可執行的檢查清單（5–8 個步驟）。本週開始每天在固定時間執行，並在最後大聲說出你的「收工宣言」（例如：「今日工作完成。」），觀察這個儀式對你下班後放鬆程度的影響。</span>
+        <span class="act-time">作業時間：30 分鐘設計 + 每日 15 分鐘執行</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── UNIT NAV ─── -->
+  <div class="unit-nav">
+    <a href="unit-reading.html" class="un-prev">
+      <span class="un-label">← 上一模組</span>
+      <div class="un-title">閱讀管理 · Module 03</div>
+    </a>
+    <a href="unit-weight.html" class="un-next">
+      <span class="un-label">下一模組 →</span>
+      <div class="un-title">體重管理 · Module 05</div>
+    </a>
+  </div>
+
+</div>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <span>個人管理學苑 &nbsp;·&nbsp; <span class="f-red">Module 04</span> &nbsp;·&nbsp; 工作管理</span>
+  <span>6 Lessons · 4h</span>
+</footer>
+
+<script>
+  function toggleLesson(id) {
+    const block = document.getElementById(id);
+    const isActive = block.classList.contains('active');
+    document.querySelectorAll('.lesson-block').forEach(b => b.classList.remove('active'));
+    if (!isActive) block.classList.add('active');
+  }
+</script>
+
+</body>
+</html>

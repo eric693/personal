@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>個人管理學苑</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper:      #f5f0e8;
+      --paper-dark: #ece7de;
+      --ink:        #1a1612;
+      --ink-light:  #4a4540;
+      --ink-muted:  #8a847c;
+      --red:        #bf3b2b;
+      --border:     #ccc5b8;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Noto Serif TC', serif;
+      min-height: 100vh;
+    }
+
+    /* ─── MASTHEAD ─── */
+    .masthead {
+      border-bottom: 2.5px solid var(--ink);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: stretch;
+    }
+
+    .mast-brand {
+      padding: 1.8rem 2.5rem;
+      border-right: 1px solid var(--border);
+    }
+    .mast-brand .vol {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.22em;
+      color: var(--red);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.35rem;
+    }
+    .mast-brand h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+    .mast-brand .tagline {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--ink-muted);
+      letter-spacing: 0.07em;
+      margin-top: 0.45rem;
+      display: block;
+    }
+
+    .mast-rule {
+      background: repeating-linear-gradient(
+        90deg,
+        transparent 0, transparent 6px,
+        var(--border) 6px, var(--border) 7px
+      );
+      margin: 1.5rem 0;
+    }
+
+    .mast-stats {
+      display: flex;
+      align-items: center;
+      padding: 0 2.5rem;
+      gap: 2.5rem;
+      border-left: 1px solid var(--border);
+    }
+    .stat { text-align: center; }
+    .stat-n {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 1.6rem;
+      font-weight: 300;
+      line-height: 1;
+      display: block;
+    }
+    .stat-n em { font-style: normal; font-size: 0.85rem; color: var(--red); }
+    .stat-l {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      color: var(--ink-muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-top: 0.2rem;
+      display: block;
+    }
+    .stat-divider {
+      width: 1px; height: 2rem;
+      background: var(--border);
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      overflow-x: auto;
+      padding: 0 2rem;
+    }
+    nav a {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--ink-light);
+      padding: 0.75rem 1.2rem;
+      border-right: 1px solid var(--border);
+      white-space: nowrap;
+      transition: background .15s, color .15s;
+      flex-shrink: 0;
+    }
+    nav a:first-child { border-left: 1px solid var(--border); }
+    nav a:hover  { background: var(--ink); color: var(--paper); }
+    nav a.active { background: var(--red); color: var(--paper); }
+
+    /* ─── LAYOUT ─── */
+    .wrap {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 3rem 2.5rem;
+    }
+
+    /* ─── LEAD ─── */
+    .lead {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 0;
+      border: 1px solid var(--ink);
+      margin-bottom: 3.5rem;
+    }
+    .lead-copy {
+      padding: 2.5rem 3rem;
+      border-right: 1px solid var(--border);
+    }
+    .tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.22em;
+      color: var(--red);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.9rem;
+    }
+    .lead-copy h2 {
+      font-size: 1.85rem;
+      font-weight: 700;
+      line-height: 1.35;
+      letter-spacing: -0.01em;
+      margin-bottom: 1.1rem;
+    }
+    .lead-copy p {
+      font-size: 0.88rem;
+      line-height: 1.95;
+      color: var(--ink-light);
+      font-weight: 300;
+    }
+    .lead-aside {
+      padding: 2.5rem;
+      background: var(--paper-dark);
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+      justify-content: center;
+    }
+    .aside-item {}
+    .aside-item .ai-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    .aside-item .ai-val {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.88rem;
+      color: var(--ink);
+    }
+    .aside-item .ai-bar {
+      height: 2px;
+      background: var(--border);
+      margin-top: 0.9rem;
+    }
+
+    /* ─── SECTION HEADER ─── */
+    .sh {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .sh h3 { font-size: 0.95rem; font-weight: 500; white-space: nowrap; }
+    .sh-line { flex: 1; height: 1px; background: var(--border); }
+    .sh-count {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--ink-muted);
+    }
+
+    /* ─── MODULE GRID ─── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border: 1px solid var(--ink);
+      margin-bottom: 3.5rem;
+    }
+
+    .card {
+      padding: 1.8rem 1.8rem 1.6rem;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      position: relative;
+      overflow: hidden;
+      transition: background .2s;
+    }
+    /* remove right border on last col */
+    .card:nth-child(3n)   { border-right: none; }
+    /* remove bottom border on last row — 7 cards → row 3 starts at card 7 */
+    .card:nth-child(n+6)  { border-bottom: none; }
+
+    .card::after {
+      content: '';
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 3px;
+      background: var(--red);
+      transform: scaleY(0);
+      transform-origin: top;
+      transition: transform .28s ease;
+    }
+    .card:hover::after  { transform: scaleY(1); }
+    .card:hover { background: var(--paper-dark); }
+
+    .card-no {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
+      color: var(--red);
+      display: block;
+      margin-bottom: 0.9rem;
+    }
+    .card-title {
+      font-size: 1.02rem;
+      font-weight: 700;
+      line-height: 1.35;
+      margin-bottom: 0.55rem;
+    }
+    .card-desc {
+      font-size: 0.8rem;
+      color: var(--ink-light);
+      line-height: 1.75;
+      font-weight: 300;
+      margin-bottom: 1.1rem;
+    }
+    .card-foot {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .card-lessons {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--ink-muted);
+    }
+    .badge {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.56rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.18rem 0.5rem;
+      border: 1px solid var(--border);
+      color: var(--ink-muted);
+      background: transparent;
+    }
+    .badge.red { border-color: var(--red); color: var(--red); }
+
+    /* Last card spans 3 col when 7th card */
+    .card-wide {
+      grid-column: span 3;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0;
+      border-right: none;
+    }
+    .card-wide .wide-badge {
+      background: var(--ink);
+      color: var(--paper);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 2.5rem;
+      border-right: 1px solid var(--border);
+      gap: 0.3rem;
+    }
+    .card-wide .wide-badge .wb-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 2.5rem;
+      font-weight: 300;
+      line-height: 1;
+      color: var(--paper);
+    }
+    .card-wide .wide-badge .wb-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.15em;
+      color: var(--ink-muted);
+    }
+    .card-wide .wide-content {
+      padding: 1.8rem 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* ─── BOTTOM STRIP ─── */
+    .strip {
+      border: 1px solid var(--ink);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      margin-bottom: 3.5rem;
+    }
+    .strip-item {
+      padding: 1.4rem 1.6rem;
+      border-right: 1px solid var(--border);
+    }
+    .strip-item:last-child { border-right: none; }
+    .si-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.16em;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+    .si-title {
+      font-size: 0.88rem;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+    .si-sub {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--ink-muted);
+      margin-top: 0.3rem;
+      display: block;
+    }
+
+    /* ─── START CTA ─── */
+    .cta {
+      border: 1.5px solid var(--red);
+      padding: 2rem 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      margin-bottom: 3.5rem;
+    }
+    .cta p {
+      font-size: 0.88rem;
+      color: var(--ink-light);
+      line-height: 1.7;
+      font-weight: 300;
+    }
+    .cta p strong { font-weight: 600; color: var(--ink); }
+    .btn {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--paper);
+      background: var(--red);
+      border: none;
+      padding: 0.75rem 1.8rem;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+      display: inline-block;
+      transition: background .15s;
+    }
+    .btn:hover { background: #a33123; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 2px solid var(--ink);
+      padding: 1.2rem 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    footer span {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--ink-muted);
+      letter-spacing: 0.08em;
+    }
+    footer .f-red { color: var(--red); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 860px) {
+      .masthead { grid-template-columns: 1fr; }
+      .mast-rule, .mast-stats { display: none; }
+      .wrap { padding: 2rem 1.4rem; }
+      .lead { grid-template-columns: 1fr; }
+      .lead-copy { border-right: none; border-bottom: 1px solid var(--border); }
+      .grid { grid-template-columns: 1fr; }
+      .card { border-right: none !important; }
+      .card:nth-child(n+6) { border-bottom: 1px solid var(--border) !important; }
+      .card:last-child { border-bottom: none !important; }
+      .card-wide { grid-column: span 1; grid-template-columns: 1fr; }
+      .card-wide .wide-badge { flex-direction: row; padding: 1.2rem 1.8rem; justify-content: flex-start; gap: 1rem; }
+      .strip { grid-template-columns: 1fr 1fr; }
+      .strip-item:nth-child(2n) { border-right: none; }
+      .strip-item:nth-child(n+3) { border-top: 1px solid var(--border); }
+      .cta { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── MASTHEAD ─── -->
+<header class="masthead">
+  <div class="mast-brand">
+    <span class="vol">Personal Mgmt. Vol.01</span>
+    <h1>個人管理學苑</h1>
+    <span class="tagline">Time · Life · Reading · Work · Weight · Finance · Growth</span>
+  </div>
+  <div class="mast-rule"></div>
+  <div class="mast-stats">
+    <div class="stat">
+      <span class="stat-n">07<em>門</em></span>
+      <span class="stat-l">課程模組</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-n">42<em>節</em></span>
+      <span class="stat-l">學習單元</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-n">28<em>h</em></span>
+      <span class="stat-l">預估時數</span>
+    </div>
+  </div>
+</header>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <a href="index.html" class="active">目錄</a>
+  <a href="unit-time.html">時間管理</a>
+  <a href="unit-life.html">生活管理</a>
+  <a href="unit-reading.html">閱讀管理</a>
+  <a href="unit-work.html">工作管理</a>
+  <a href="unit-weight.html">體重管理</a>
+  <a href="unit-finance.html">理財管理</a>
+  <a href="unit-growth.html">提升自我</a>
+</nav>
+
+<div class="wrap">
+
+  <!-- ─── LEAD ─── -->
+  <section class="lead">
+    <div class="lead-copy">
+      <span class="tag">// 課程宗旨</span>
+      <h2>管理自己，<br>是一切進步的起點。</h2>
+      <p>
+        這套課程從七個核心面向切入——時間、生活、閱讀、工作、體重、理財與自我提升——建立一套完整的個人管理系統。每個模組相互連結，幫助你在有限的精力與時間內，最大化人生產出，找回對日常的掌控感。
+      </p>
+    </div>
+    <div class="lead-aside">
+      <div class="aside-item">
+        <span class="ai-label">學習方式</span>
+        <span class="ai-val">理論框架 + 即時可用工具</span>
+        <div class="ai-bar"></div>
+      </div>
+      <div class="aside-item">
+        <span class="ai-label">適合對象</span>
+        <span class="ai-val">希望系統化管理人生的你</span>
+        <div class="ai-bar"></div>
+      </div>
+      <div class="aside-item">
+        <span class="ai-label">課程特色</span>
+        <span class="ai-val">每節附有實作練習清單</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── MODULES ─── -->
+  <div class="sh">
+    <h3>課程模組</h3>
+    <div class="sh-line"></div>
+    <span class="sh-count">07 modules · 42 lessons</span>
+  </div>
+
+  <div class="grid">
+
+    <!-- 01 時間管理 -->
+    <a href="unit-time.html" class="card">
+      <span class="card-no">MODULE — 01</span>
+      <div class="card-title">時間管理<br>工作分配優化</div>
+      <p class="card-desc">時間盤點、優先序矩陣、深度工作、番茄鐘法，重新奪回每天最重要的幾個小時。</p>
+      <div class="card-foot">
+        <span class="card-lessons">6 lessons · 4.5h</span>
+        <span class="badge red">入門推薦</span>
+      </div>
+    </a>
+
+    <!-- 02 生活管理 -->
+    <a href="unit-life.html" class="card">
+      <span class="card-no">MODULE — 02</span>
+      <div class="card-title">生活管理<br>日常節律設計</div>
+      <p class="card-desc">晨間與夜間例程、習慣堆疊、環境設計——讓每天不靠意志力也能有條不紊。</p>
+      <div class="card-foot">
+        <span class="card-lessons">6 lessons · 4h</span>
+        <span class="badge">核心必修</span>
+      </div>
+    </a>
+
+    <!-- 03 閱讀管理 -->
+    <a href="unit-reading.html" class="card">
+      <span class="card-no">MODULE — 03</span>
+      <div class="card-title">閱讀管理<br>知識吸收系統</div>
+      <p class="card-desc">選書策略、速讀技法、筆記輸出、知識複利——讓每本書都真正落地。</p>
+      <div class="card-foot">
+        <span class="card-lessons">6 lessons · 4h</span>
+        <span class="badge">高效學習</span>
+      </div>
+    </a>
+
+    <!-- 04 工作管理 -->
+    <a href="unit-work.html" class="card">
+      <span class="card-no">MODULE — 04</span>
+      <div class="card-title">工作管理<br>效能系統建立</div>
+      <p class="card-desc">GTD 方法論、任務分類、專案追蹤與收件匣清零，工作從忙亂到清晰可控。</p>
+      <div class="card-foot">
+        <span class="card-lessons">6 lessons · 4h</span>
+        <span class="badge">職場提升</span>
+      </div>
+    </a>
+
+    <!-- 05 體重管理 -->
+    <a href="unit-weight.html" class="card">
+      <span class="card-no">MODULE — 05</span>
+      <div class="card-title">體重管理<br>身體自主權</div>
+      <p class="card-desc">熱量觀念、飲食記錄、運動計畫設計，用數據思維管理身體，而非憑感覺。</p>
+      <div class="card-foot">
+        <span class="card-lessons">6 lessons · 3.5h</span>
+        <span class="badge">健康基礎</span>
+      </div>
+    </a>
+
+    <!-- 06 理財管理 -->
+    <a href="unit-finance.html" class="card">
+      <span class="card-no">MODULE — 06</span>
+      <div class="card-title">理財管理<br>個人財務規劃</div>
+      <p class="card-desc">記帳習慣、預算設計、緊急備用金、投資入門——從掌握現金流開始建立財務安全感。</p>
+      <div class="card-foot">
+        <span class="card-lessons">6 lessons · 4h</span>
+        <span class="badge">財務自由</span>
+      </div>
+    </a>
+
+    <!-- 07 提升自我 — wide card -->
+    <a href="unit-growth.html" class="card card-wide">
+      <div class="wide-badge">
+        <span class="wb-num">07</span>
+        <span class="wb-label">Module</span>
+      </div>
+      <div class="wide-content">
+        <span class="card-no">MODULE — 07</span>
+        <div class="card-title">提升自我 ／ Self Growth</div>
+        <p class="card-desc">心態建立、目標設定框架（OKR / SMART）、覆盤方法、高效能人士習慣整合——把前六個模組串聯成一套完整的人生作業系統。</p>
+        <div class="card-foot">
+          <span class="card-lessons">6 lessons · 4h</span>
+          <span class="badge red">整合必修</span>
+        </div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- ─── LEARNING PATH ─── -->
+  <div class="sh">
+    <h3>建議學習路徑</h3>
+    <div class="sh-line"></div>
+  </div>
+
+  <div class="strip">
+    <div class="strip-item">
+      <span class="si-label">Step 01</span>
+      <div class="si-title">先修時間管理</div>
+      <span class="si-sub">建立時間感知基礎</span>
+    </div>
+    <div class="strip-item">
+      <span class="si-label">Step 02</span>
+      <div class="si-title">工作 + 生活管理</div>
+      <span class="si-sub">同步建立日常骨架</span>
+    </div>
+    <div class="strip-item">
+      <span class="si-label">Step 03</span>
+      <div class="si-title">理財 + 體重管理</div>
+      <span class="si-sub">數字化身體與財務</span>
+    </div>
+    <div class="strip-item">
+      <span class="si-label">Step 04</span>
+      <div class="si-title">閱讀 → 提升自我</div>
+      <span class="si-sub">輸入知識，整合系統</span>
+    </div>
+  </div>
+
+  <!-- ─── CTA ─── -->
+  <div class="cta">
+    <p>
+      <strong>準備好了嗎？</strong><br>
+      建議從「時間管理」模組開始，每天投入 30 分鐘，四週內建立起屬於你的個人管理作業系統。
+    </p>
+    <a href="unit-time.html" class="btn">開始第一課 →</a>
+  </div>
+
+</div>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <span>個人管理學苑 &nbsp;·&nbsp; <span class="f-red">Vol.01</span></span>
+  <span>07 Modules · 42 Lessons · 28h</span>
+</footer>
+
+</body>
+</html>

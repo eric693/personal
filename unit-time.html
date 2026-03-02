@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>時間管理 — 個人管理學苑</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper:      #f5f0e8;
+      --paper-dark: #ece7de;
+      --paper-deep: #e4ddd3;
+      --ink:        #1a1612;
+      --ink-light:  #4a4540;
+      --ink-muted:  #8a847c;
+      --red:        #bf3b2b;
+      --border:     #ccc5b8;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Noto Serif TC', serif;
+      min-height: 100vh;
+    }
+
+    /* ─── MASTHEAD ─── */
+    .masthead {
+      border-bottom: 2.5px solid var(--ink);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: stretch;
+    }
+    .mast-brand {
+      padding: 1.8rem 2.5rem;
+      border-right: 1px solid var(--border);
+    }
+    .mast-brand .vol {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.22em;
+      color: var(--red);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.35rem;
+    }
+    .mast-brand h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+    .mast-brand .tagline {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--ink-muted);
+      letter-spacing: 0.07em;
+      margin-top: 0.45rem;
+      display: block;
+    }
+    .mast-rule {
+      background: repeating-linear-gradient(
+        90deg,
+        transparent 0, transparent 6px,
+        var(--border) 6px, var(--border) 7px
+      );
+      margin: 1.5rem 0;
+    }
+    .mast-stats {
+      display: flex;
+      align-items: center;
+      padding: 0 2.5rem;
+      gap: 2.5rem;
+      border-left: 1px solid var(--border);
+    }
+    .stat { text-align: center; }
+    .stat-n {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 1.6rem;
+      font-weight: 300;
+      line-height: 1;
+      display: block;
+    }
+    .stat-n em { font-style: normal; font-size: 0.85rem; color: var(--red); }
+    .stat-l {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      color: var(--ink-muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-top: 0.2rem;
+      display: block;
+    }
+    .stat-divider { width: 1px; height: 2rem; background: var(--border); }
+
+    /* ─── NAV ─── */
+    nav {
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      overflow-x: auto;
+      padding: 0 2rem;
+    }
+    nav a {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--ink-light);
+      padding: 0.75rem 1.2rem;
+      border-right: 1px solid var(--border);
+      white-space: nowrap;
+      transition: background .15s, color .15s;
+      flex-shrink: 0;
+    }
+    nav a:first-child { border-left: 1px solid var(--border); }
+    nav a:hover  { background: var(--ink); color: var(--paper); }
+    nav a.active { background: var(--red); color: var(--paper); }
+
+    /* ─── LAYOUT ─── */
+    .wrap {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 3rem 2.5rem;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      border: 1px solid var(--ink);
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      margin-bottom: 3.5rem;
+    }
+    .hero-main {
+      padding: 3rem 3rem 2.5rem;
+      border-right: 1px solid var(--border);
+    }
+    .breadcrumb {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1.2rem;
+    }
+    .breadcrumb a {
+      color: var(--ink-muted);
+      text-decoration: none;
+    }
+    .breadcrumb a:hover { color: var(--red); }
+    .breadcrumb .sep { color: var(--border); }
+    .breadcrumb .cur { color: var(--red); }
+    .hero-main h2 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.15;
+      margin-bottom: 1.2rem;
+    }
+    .hero-main h2 span { color: var(--red); }
+    .hero-main .lead {
+      font-size: 0.92rem;
+      line-height: 1.95;
+      color: var(--ink-light);
+      font-weight: 300;
+      max-width: 560px;
+    }
+    .hero-meta {
+      display: flex;
+      gap: 2rem;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .hm-item {}
+    .hm-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.16em;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    .hm-val {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.82rem;
+      color: var(--ink);
+    }
+    .hero-aside {
+      background: var(--paper-dark);
+      padding: 2.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .aside-lesson {
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+    }
+    .aside-lesson:first-child { padding-top: 0; }
+    .aside-lesson:last-child { border-bottom: none; padding-bottom: 0; }
+    .al-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--red);
+      flex-shrink: 0;
+      letter-spacing: 0.1em;
+    }
+    .al-title {
+      font-size: 0.82rem;
+      font-weight: 500;
+      line-height: 1.3;
+    }
+
+    /* ─── SECTION HEADER ─── */
+    .sh {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.8rem;
+    }
+    .sh h3 { font-size: 0.95rem; font-weight: 500; white-space: nowrap; }
+    .sh-line { flex: 1; height: 1px; background: var(--border); }
+    .sh-note {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--ink-muted);
+    }
+
+    /* ─── LESSONS ─── */
+    .lesson-block {
+      border: 1px solid var(--ink);
+      margin-bottom: 1.5rem;
+    }
+    .lesson-block:last-of-type { margin-bottom: 3.5rem; }
+
+    .lesson-header {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+      transition: background .15s;
+    }
+    .lesson-header:hover { background: var(--paper-dark); }
+
+    .lh-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      color: var(--paper);
+      background: var(--ink);
+      padding: 1.1rem 1.4rem;
+      border-right: 1px solid var(--border);
+      align-self: stretch;
+      display: flex;
+      align-items: center;
+    }
+    .lesson-block.active .lh-num { background: var(--red); }
+
+    .lh-info {
+      padding: 1.1rem 1.6rem;
+    }
+    .lh-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.2rem;
+    }
+    .lh-sub {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--ink-muted);
+      letter-spacing: 0.06em;
+    }
+
+    .lh-toggle {
+      padding: 1.1rem 1.6rem;
+      border-left: 1px solid var(--border);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--ink-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+    }
+    .toggle-arrow {
+      display: inline-block;
+      transition: transform .25s ease;
+      font-style: normal;
+    }
+    .lesson-block.active .toggle-arrow { transform: rotate(90deg); }
+
+    .lesson-body {
+      display: none;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+    .lesson-block.active .lesson-body { display: grid; }
+
+    .lb-content {
+      padding: 2rem 2.2rem;
+      border-right: 1px solid var(--border);
+    }
+    .lb-content h4 {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--red);
+      text-transform: uppercase;
+      margin-bottom: 0.9rem;
+    }
+    .lb-content p {
+      font-size: 0.86rem;
+      line-height: 1.9;
+      color: var(--ink-light);
+      font-weight: 300;
+      margin-bottom: 1.2rem;
+    }
+    .lb-content p:last-child { margin-bottom: 0; }
+
+    .lb-points {
+      padding: 2rem 2.2rem;
+      background: var(--paper-dark);
+    }
+    .lb-points h4 {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--red);
+      text-transform: uppercase;
+      margin-bottom: 0.9rem;
+    }
+    .point-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+    .point-list li {
+      font-size: 0.84rem;
+      line-height: 1.55;
+      color: var(--ink-light);
+      padding-left: 1.2rem;
+      position: relative;
+      font-weight: 300;
+    }
+    .point-list li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--red);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.75rem;
+    }
+
+    .lb-action {
+      grid-column: span 2;
+      border-top: 1px solid var(--border);
+      padding: 1.4rem 2.2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      background: var(--paper);
+    }
+    .lb-action .act-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      color: var(--red);
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+    .lb-action .act-text {
+      font-size: 0.82rem;
+      color: var(--ink-light);
+      font-weight: 300;
+      line-height: 1.5;
+      flex: 1;
+    }
+    .lb-action .act-time {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--ink-muted);
+      flex-shrink: 0;
+    }
+
+    /* ─── FRAMEWORK BOX ─── */
+    .framework {
+      border: 1px solid var(--ink);
+      margin-bottom: 3.5rem;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .fw-item {
+      padding: 1.8rem 1.6rem;
+      border-right: 1px solid var(--border);
+    }
+    .fw-item:last-child { border-right: none; }
+    .fw-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.16em;
+      color: var(--red);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    .fw-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      line-height: 1.2;
+    }
+    .fw-desc {
+      font-size: 0.78rem;
+      color: var(--ink-light);
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    /* ─── QUOTE ─── */
+    .pullquote {
+      border-left: 3px solid var(--red);
+      padding: 1.5rem 2rem;
+      margin: 3.5rem 0;
+      background: var(--paper-dark);
+    }
+    .pullquote blockquote {
+      font-size: 1.25rem;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--ink);
+      letter-spacing: 0.01em;
+      margin-bottom: 0.6rem;
+    }
+    .pullquote cite {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--ink-muted);
+      letter-spacing: 0.12em;
+      font-style: normal;
+    }
+
+    /* ─── NAV NEXT ─── */
+    .unit-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1px solid var(--ink);
+      margin-bottom: 3.5rem;
+    }
+    .un-prev, .un-next {
+      padding: 1.5rem 2rem;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: background .15s;
+    }
+    .un-next { border-left: 1px solid var(--border); text-align: right; }
+    .un-prev:hover, .un-next:hover { background: var(--paper-dark); }
+    .un-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+    .un-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 2px solid var(--ink);
+      padding: 1.2rem 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    footer span {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--ink-muted);
+      letter-spacing: 0.08em;
+    }
+    footer .f-red { color: var(--red); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 860px) {
+      .masthead { grid-template-columns: 1fr; }
+      .mast-rule, .mast-stats { display: none; }
+      .wrap { padding: 2rem 1.4rem; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-main { border-right: none; border-bottom: 1px solid var(--border); padding: 2rem 1.8rem; }
+      .hero-main h2 { font-size: 2rem; }
+      .hero-aside { display: none; }
+      .lesson-body { grid-template-columns: 1fr; }
+      .lb-content { border-right: none; border-bottom: 1px solid var(--border); }
+      .lb-action { grid-column: span 1; }
+      .framework { grid-template-columns: 1fr 1fr; }
+      .fw-item:nth-child(2n) { border-right: none; }
+      .fw-item:nth-child(n+3) { border-top: 1px solid var(--border); }
+      .unit-nav { grid-template-columns: 1fr; }
+      .un-next { border-left: none; border-top: 1px solid var(--border); text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── MASTHEAD ─── -->
+<header class="masthead">
+  <div class="mast-brand">
+    <span class="vol">Personal Mgmt. Vol.01</span>
+    <h1>個人管理學苑</h1>
+    <span class="tagline">Time · Life · Reading · Work · Weight · Finance · Growth</span>
+  </div>
+  <div class="mast-rule"></div>
+  <div class="mast-stats">
+    <div class="stat">
+      <span class="stat-n">01<em>模</em></span>
+      <span class="stat-l">時間管理</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-n">06<em>節</em></span>
+      <span class="stat-l">學習單元</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-n">4.5<em>h</em></span>
+      <span class="stat-l">預估時數</span>
+    </div>
+  </div>
+</header>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <a href="index.html">目錄</a>
+  <a href="unit-time.html" class="active">時間管理</a>
+  <a href="unit-life.html">生活管理</a>
+  <a href="unit-reading.html">閱讀管理</a>
+  <a href="unit-work.html">工作管理</a>
+  <a href="unit-weight.html">體重管理</a>
+  <a href="unit-finance.html">理財管理</a>
+  <a href="unit-growth.html">提升自我</a>
+</nav>
+
+<div class="wrap">
+
+  <!-- ─── HERO ─── -->
+  <section class="hero">
+    <div class="hero-main">
+      <div class="breadcrumb">
+        <a href="index.html">個人管理學苑</a>
+        <span class="sep">/</span>
+        <span class="cur">Module 01</span>
+      </div>
+      <h2>時間管理<br><span>工作分配優化</span></h2>
+      <p class="lead">
+        時間是唯一無法儲存的資源。這個模組從「時間感知」出發，帶你建立屬於自己的優先序系統，透過深度工作、時間區塊與精力管理，讓每一天從混亂走向清晰可控。
+      </p>
+      <div class="hero-meta">
+        <div class="hm-item">
+          <span class="hm-label">難度</span>
+          <span class="hm-val">入門 → 中級</span>
+        </div>
+        <div class="hm-item">
+          <span class="hm-label">建議節奏</span>
+          <span class="hm-val">每週 1–2 節</span>
+        </div>
+        <div class="hm-item">
+          <span class="hm-label">核心工具</span>
+          <span class="hm-val">週計畫表 · 時間日誌 · 任務矩陣</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-aside">
+      <div class="aside-lesson">
+        <span class="al-num">L01</span>
+        <div class="al-title">時間盤點：你的時間去哪了？</div>
+      </div>
+      <div class="aside-lesson">
+        <span class="al-num">L02</span>
+        <div class="al-title">優先序矩陣：要事第一</div>
+      </div>
+      <div class="aside-lesson">
+        <span class="al-num">L03</span>
+        <div class="al-title">深度工作與淺層工作</div>
+      </div>
+      <div class="aside-lesson">
+        <span class="al-num">L04</span>
+        <div class="al-title">時間區塊規劃法</div>
+      </div>
+      <div class="aside-lesson">
+        <span class="al-num">L05</span>
+        <div class="al-title">精力管理與工作節律</div>
+      </div>
+      <div class="aside-lesson">
+        <span class="al-num">L06</span>
+        <div class="al-title">週覆盤與系統維護</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FRAMEWORK ─── -->
+  <div class="sh">
+    <h3>核心觀念框架</h3>
+    <div class="sh-line"></div>
+  </div>
+  <div class="framework">
+    <div class="fw-item">
+      <span class="fw-label">Concept 01</span>
+      <div class="fw-title">時間感知</div>
+      <p class="fw-desc">先記錄，再優化。不了解時間流向，任何管理方法都是空談。</p>
+    </div>
+    <div class="fw-item">
+      <span class="fw-label">Concept 02</span>
+      <div class="fw-title">優先序</div>
+      <p class="fw-desc">不是所有事情都重要。學會區分緊急與重要，把精力放對地方。</p>
+    </div>
+    <div class="fw-item">
+      <span class="fw-label">Concept 03</span>
+      <div class="fw-title">深度工作</div>
+      <p class="fw-desc">保護你的專注時間。高難度的工作需要不被打斷的深度狀態。</p>
+    </div>
+    <div class="fw-item">
+      <span class="fw-label">Concept 04</span>
+      <div class="fw-title">系統思維</div>
+      <p class="fw-desc">好的時間管理是一套可重複執行的系統，而非一次性的意志力爆發。</p>
+    </div>
+  </div>
+
+  <!-- ─── PULLQUOTE ─── -->
+  <div class="pullquote">
+    <blockquote>「忙碌不等於高效。真正有生產力的人，保護的是他們的注意力，而非他們的時間表。」</blockquote>
+    <cite>— Cal Newport, Deep Work</cite>
+  </div>
+
+  <!-- ─── LESSONS ─── -->
+  <div class="sh">
+    <h3>課程單元</h3>
+    <div class="sh-line"></div>
+    <span class="sh-note">點擊展開內容</span>
+  </div>
+
+  <!-- L01 -->
+  <div class="lesson-block active" id="l01">
+    <div class="lesson-header" onclick="toggleLesson('l01')">
+      <span class="lh-num">L01</span>
+      <div class="lh-info">
+        <div class="lh-title">時間盤點：你的時間去哪了？</div>
+        <div class="lh-sub">Time Audit · 45 min</div>
+      </div>
+      <div class="lh-toggle">
+        展開 <i class="toggle-arrow">›</i>
+      </div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>在改變任何習慣之前，你必須先知道自己的時間實際花在哪裡。大多數人對自己的時間使用有嚴重的誤判——以為花了兩小時在工作，實際上有效的深度時間可能不到四十分鐘。</p>
+        <p>本單元將帶你進行為期三天的「時間日誌」記錄，每半小時記錄一次自己在做什麼，並在結束後進行分類與分析。這是整個時間管理系統最重要的基礎步驟。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>時間日誌的記錄方法與工具選擇</li>
+          <li>活動分類：深度工作 / 淺層工作 / 維護性任務 / 浪費</li>
+          <li>找出你的「時間漏洞」——最常不自覺消耗時間的情境</li>
+          <li>計算你每天真正可用的「黃金工作時間」</li>
+          <li>設定個人時間使用的基準線（baseline）</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">連續三天，每 30 分鐘記錄一次自己的活動，使用紙本或 Notion 模板均可。完成後統計各類別佔比，找出前三大「時間消耗點」。</span>
+        <span class="act-time">作業時間：3 天</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- L02 -->
+  <div class="lesson-block" id="l02">
+    <div class="lesson-header" onclick="toggleLesson('l02')">
+      <span class="lh-num">L02</span>
+      <div class="lh-info">
+        <div class="lh-title">優先序矩陣：要事第一</div>
+        <div class="lh-sub">Eisenhower Matrix · 40 min</div>
+      </div>
+      <div class="lh-toggle">
+        展開 <i class="toggle-arrow">›</i>
+      </div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>艾森豪矩陣將所有任務按照「緊急程度」與「重要程度」分為四個象限。大多數人的問題不是不夠努力，而是把大量時間花在「緊急但不重要」的事情上，忽略了真正能帶來長期改變的「重要但不緊急」任務。</p>
+        <p>本單元將帶你學會任務分類的思維，以及如何在每天開始前，用五分鐘確認自己的優先序，確保每天的精力花在最值得的事情上。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>四象限定義：緊急重要 / 不緊急重要 / 緊急不重要 / 不緊急不重要</li>
+          <li>為什麼「第二象限」是最被忽略、最重要的區域</li>
+          <li>如何對「假緊急」任務說不</li>
+          <li>每日三件要事（MIT）工作法</li>
+          <li>建立個人任務清單的篩選機制</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">列出目前待辦清單中的所有任務，用艾森豪矩陣進行分類。刪除或委派所有第四象限的任務，並為第二象限任務安排明確的時間。</span>
+        <span class="act-time">作業時間：30 分鐘</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- L03 -->
+  <div class="lesson-block" id="l03">
+    <div class="lesson-header" onclick="toggleLesson('l03')">
+      <span class="lh-num">L03</span>
+      <div class="lh-info">
+        <div class="lh-title">深度工作與淺層工作</div>
+        <div class="lh-sub">Deep Work vs. Shallow Work · 45 min</div>
+      </div>
+      <div class="lh-toggle">
+        展開 <i class="toggle-arrow">›</i>
+      </div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>Cal Newport 在《深度工作力》中提出：在注意力高度分散的時代，能夠長時間專注的能力，將成為最稀缺也最有價值的技能。深度工作不僅讓你產出品質更高的成果，同時也帶來更強的成就感與心流體驗。</p>
+        <p>本單元將幫助你識別哪些是需要深度專注的工作，哪些是可以批次處理的淺層任務，並設計一套保護專注時間的環境與儀式。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>深度工作的定義與衡量標準</li>
+          <li>四種深度工作哲學：隱士型、雙峰型、節律型、新聞記者型</li>
+          <li>設計你的「深度工作啟動儀式」</li>
+          <li>消除分心來源：通知、環境、人際打斷</li>
+          <li>淺層工作的批次處理策略</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">本週安排兩次「深度工作時段」，每次 90 分鐘，關閉所有通知，記錄完成的成果與主觀感受。找出最適合自己的深度工作時段（早晨、下午或夜間）。</span>
+        <span class="act-time">作業時間：1 週實驗</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- L04 -->
+  <div class="lesson-block" id="l04">
+    <div class="lesson-header" onclick="toggleLesson('l04')">
+      <span class="lh-num">L04</span>
+      <div class="lh-info">
+        <div class="lh-title">時間區塊規劃法</div>
+        <div class="lh-sub">Time Blocking · 40 min</div>
+      </div>
+      <div class="lh-toggle">
+        展開 <i class="toggle-arrow">›</i>
+      </div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>時間區塊規劃法是指在行事曆上為特定類型的工作預留固定的時間段，而非單純依賴待辦清單。當你的時間被提前「預訂」，就不容易被臨時的請求與分心打亂節奏。</p>
+        <p>本單元將帶你設計一份理想的「週計畫模板」，包含深度工作區塊、淺層工作區塊、休息與恢復時間，以及彈性緩衝時間，讓每週從一開始就有清晰的骨架。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>時間區塊 vs. 待辦清單：兩者的互補關係</li>
+          <li>設計你的理想週模板（Ideal Week Template）</li>
+          <li>固定區塊 vs. 彈性區塊的比例配置</li>
+          <li>如何處理臨時插入的任務不破壞計畫</li>
+          <li>番茄鐘法作為區塊內的執行節拍器</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">用行事曆或紙本，設計一份「理想週模板」，為深度工作、會議、郵件回覆、運動和個人恢復各安排固定時段，並在本週試行一次。</span>
+        <span class="act-time">作業時間：1 小時設計 + 1 週試行</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- L05 -->
+  <div class="lesson-block" id="l05">
+    <div class="lesson-header" onclick="toggleLesson('l05')">
+      <span class="lh-num">L05</span>
+      <div class="lh-info">
+        <div class="lh-title">精力管理與工作節律</div>
+        <div class="lh-sub">Energy Management · 45 min</div>
+      </div>
+      <div class="lh-toggle">
+        展開 <i class="toggle-arrow">›</i>
+      </div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>管理時間的前提，是管理精力。人的注意力與認知資源在一天之中是有限且波動的——強迫自己在精力低谷時硬撐做高難度工作，不僅效率低落，還會加速耗盡。</p>
+        <p>本單元探討晝夜節律對工作能力的影響、如何識別個人的精力高峰時段，並設計「精力地圖」，讓對的任務配對對的精力狀態，最大化每一刻的工作品質。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>晝夜節律與認知高峰時段的科學基礎</li>
+          <li>找出你的「類型」：早鳥型 / 夜貓型 / 中間型</li>
+          <li>繪製個人精力地圖（Energy Map）</li>
+          <li>高精力 → 深度工作 ／ 中精力 → 創意工作 ／ 低精力 → 行政任務</li>
+          <li>恢復策略：微休息、自然、運動與睡眠品質</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">連續五天，在每天不同時段（上午、中午、下午、傍晚）記錄自己的專注度與精力分數（1–10）。畫出個人精力曲線，據此調整週模板中各類任務的時段安排。</span>
+        <span class="act-time">作業時間：5 天觀察</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- L06 -->
+  <div class="lesson-block" id="l06">
+    <div class="lesson-header" onclick="toggleLesson('l06')">
+      <span class="lh-num">L06</span>
+      <div class="lh-info">
+        <div class="lh-title">週覆盤與系統維護</div>
+        <div class="lh-sub">Weekly Review · 40 min</div>
+      </div>
+      <div class="lh-toggle">
+        展開 <i class="toggle-arrow">›</i>
+      </div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>一套時間管理系統若沒有定期的維護與反思，很快就會崩解。週覆盤是讓系統持續運作的關鍵儀式——每週固定花三十分鐘，回顧過去一週的完成情況，處理遺留事項，並規劃下一週。</p>
+        <p>本單元將提供一份完整的「週覆盤問題清單」與操作流程，幫助你建立這個習慣，讓時間管理成為自動運作的背景系統，而非需要靠意志力維持的努力。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>週覆盤的六個核心步驟（GTD 框架）</li>
+          <li>清空收件匣：郵件、訊息、筆記、待辦</li>
+          <li>回顧完成與未完成的任務，進行歸因分析</li>
+          <li>確認下週目標與三大要事</li>
+          <li>系統迭代：每月微調一次整體時間分配</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">這週日，執行你的第一次完整週覆盤。使用本課提供的問題清單，花不超過 40 分鐘完成。並在行事曆上設定每週固定的覆盤時間（建議週日晚間或週一早晨）。</span>
+        <span class="act-time">作業時間：每週 30–40 分鐘</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── UNIT NAV ─── -->
+  <div class="unit-nav">
+    <a href="index.html" class="un-prev">
+      <span class="un-label">← 返回</span>
+      <div class="un-title">課程目錄</div>
+    </a>
+    <a href="unit-life.html" class="un-next">
+      <span class="un-label">下一模組 →</span>
+      <div class="un-title">生活管理 · Module 02</div>
+    </a>
+  </div>
+
+</div>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <span>個人管理學苑 &nbsp;·&nbsp; <span class="f-red">Module 01</span> &nbsp;·&nbsp; 時間管理</span>
+  <span>6 Lessons · 4.5h</span>
+</footer>
+
+<script>
+  function toggleLesson(id) {
+    const block = document.getElementById(id);
+    const isActive = block.classList.contains('active');
+    // Close all
+    document.querySelectorAll('.lesson-block').forEach(b => b.classList.remove('active'));
+    // Open clicked if it was closed
+    if (!isActive) block.classList.add('active');
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>體重管理 — 個人管理學苑</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper:      #f5f0e8;
+      --paper-dark: #ece7de;
+      --paper-deep: #e4ddd3;
+      --ink:        #1a1612;
+      --ink-light:  #4a4540;
+      --ink-muted:  #8a847c;
+      --red:        #bf3b2b;
+      --border:     #ccc5b8;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Noto Serif TC', serif;
+      min-height: 100vh;
+    }
+
+    /* ─── MASTHEAD ─── */
+    .masthead {
+      border-bottom: 2.5px solid var(--ink);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: stretch;
+    }
+    .mast-brand { padding: 1.8rem 2.5rem; border-right: 1px solid var(--border); }
+    .mast-brand .vol {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.22em; color: var(--red);
+      text-transform: uppercase; display: block; margin-bottom: 0.35rem;
+    }
+    .mast-brand h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+    .mast-brand .tagline {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem;
+      color: var(--ink-muted); letter-spacing: 0.07em; margin-top: 0.45rem; display: block;
+    }
+    .mast-rule {
+      background: repeating-linear-gradient(90deg, transparent 0, transparent 6px, var(--border) 6px, var(--border) 7px);
+      margin: 1.5rem 0;
+    }
+    .mast-stats {
+      display: flex; align-items: center; padding: 0 2.5rem;
+      gap: 2.5rem; border-left: 1px solid var(--border);
+    }
+    .stat { text-align: center; }
+    .stat-n {
+      font-family: 'IBM Plex Mono', monospace; font-size: 1.6rem;
+      font-weight: 300; line-height: 1; display: block;
+    }
+    .stat-n em { font-style: normal; font-size: 0.85rem; color: var(--red); }
+    .stat-l {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem;
+      color: var(--ink-muted); letter-spacing: 0.12em; text-transform: uppercase;
+      margin-top: 0.2rem; display: block;
+    }
+    .stat-divider { width: 1px; height: 2rem; background: var(--border); }
+
+    /* ─── NAV ─── */
+    nav {
+      border-bottom: 1px solid var(--border);
+      display: flex; overflow-x: auto; padding: 0 2rem;
+    }
+    nav a {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem;
+      letter-spacing: 0.14em; text-transform: uppercase; text-decoration: none;
+      color: var(--ink-light); padding: 0.75rem 1.2rem;
+      border-right: 1px solid var(--border); white-space: nowrap;
+      transition: background .15s, color .15s; flex-shrink: 0;
+    }
+    nav a:first-child { border-left: 1px solid var(--border); }
+    nav a:hover  { background: var(--ink); color: var(--paper); }
+    nav a.active { background: var(--red); color: var(--paper); }
+
+    /* ─── LAYOUT ─── */
+    .wrap { max-width: 1160px; margin: 0 auto; padding: 3rem 2.5rem; }
+
+    /* ─── HERO ─── */
+    .hero {
+      border: 1px solid var(--ink); display: grid;
+      grid-template-columns: 2fr 1fr; margin-bottom: 3.5rem;
+    }
+    .hero-main { padding: 3rem 3rem 2.5rem; border-right: 1px solid var(--border); }
+    .breadcrumb {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem;
+      letter-spacing: 0.18em; color: var(--ink-muted); text-transform: uppercase;
+      display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1.2rem;
+    }
+    .breadcrumb a { color: var(--ink-muted); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--red); }
+    .breadcrumb .sep { color: var(--border); }
+    .breadcrumb .cur { color: var(--red); }
+    .hero-main h2 {
+      font-size: 2.8rem; font-weight: 700; letter-spacing: -0.025em;
+      line-height: 1.15; margin-bottom: 1.2rem;
+    }
+    .hero-main h2 span { color: var(--red); }
+    .hero-main .lead {
+      font-size: 0.92rem; line-height: 1.95;
+      color: var(--ink-light); font-weight: 300; max-width: 560px;
+    }
+    .hero-meta {
+      display: flex; gap: 2rem; margin-top: 2rem;
+      padding-top: 1.5rem; border-top: 1px solid var(--border); flex-wrap: wrap;
+    }
+    .hm-label {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem;
+      letter-spacing: 0.16em; color: var(--ink-muted); text-transform: uppercase;
+      display: block; margin-bottom: 0.25rem;
+    }
+    .hm-val { font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; color: var(--ink); }
+    .hero-aside {
+      background: var(--paper-dark); padding: 2.5rem 2rem; display: flex; flex-direction: column;
+    }
+    .aside-lesson {
+      padding: 1rem 0; border-bottom: 1px solid var(--border);
+      display: flex; align-items: baseline; gap: 1rem;
+    }
+    .aside-lesson:first-child { padding-top: 0; }
+    .aside-lesson:last-child { border-bottom: none; padding-bottom: 0; }
+    .al-num {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem;
+      color: var(--red); flex-shrink: 0; letter-spacing: 0.1em;
+    }
+    .al-title { font-size: 0.82rem; font-weight: 500; line-height: 1.3; }
+
+    /* ─── SECTION HEADER ─── */
+    .sh { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.8rem; }
+    .sh h3 { font-size: 0.95rem; font-weight: 500; white-space: nowrap; }
+    .sh-line { flex: 1; height: 1px; background: var(--border); }
+    .sh-note { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; color: var(--ink-muted); }
+
+    /* ─── FRAMEWORK ─── */
+    .framework {
+      border: 1px solid var(--ink); margin-bottom: 3.5rem;
+      display: grid; grid-template-columns: repeat(4, 1fr);
+    }
+    .fw-item { padding: 1.8rem 1.6rem; border-right: 1px solid var(--border); }
+    .fw-item:last-child { border-right: none; }
+    .fw-label {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem;
+      letter-spacing: 0.16em; color: var(--red); text-transform: uppercase;
+      display: block; margin-bottom: 0.5rem;
+    }
+    .fw-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.5rem; line-height: 1.2; }
+    .fw-desc { font-size: 0.78rem; color: var(--ink-light); line-height: 1.7; font-weight: 300; }
+
+    /* ─── CALORIE SCIENCE TABLE ─── */
+    .science-grid {
+      border: 1px solid var(--ink); margin-bottom: 3.5rem;
+      display: grid; grid-template-columns: 1fr 1fr;
+    }
+    .sg-panel { padding: 2rem 2.2rem; }
+    .sg-panel:first-child { border-right: 1px solid var(--border); }
+    .sg-panel h4 {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem;
+      letter-spacing: 0.2em; color: var(--red); text-transform: uppercase;
+      margin-bottom: 1.2rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--border);
+    }
+    .formula-block {
+      background: var(--paper-dark);
+      border-left: 3px solid var(--red);
+      padding: 1.2rem 1.4rem;
+      margin-bottom: 1.2rem;
+    }
+    .formula-block .f-label {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem;
+      color: var(--ink-muted); letter-spacing: 0.14em; text-transform: uppercase;
+      display: block; margin-bottom: 0.4rem;
+    }
+    .formula-block .f-eq {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.88rem;
+      color: var(--ink); line-height: 1.5;
+    }
+    .formula-block .f-eq em { font-style: normal; color: var(--red); }
+    .sg-note { font-size: 0.8rem; color: var(--ink-light); line-height: 1.8; font-weight: 300; }
+
+    .macro-row {
+      display: flex; align-items: baseline;
+      justify-content: space-between;
+      padding: 0.75rem 0; border-bottom: 1px solid var(--border);
+    }
+    .macro-row:last-child { border-bottom: none; }
+    .macro-name { font-size: 0.88rem; font-weight: 500; }
+    .macro-kcal {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; color: var(--red);
+    }
+    .macro-note { font-size: 0.76rem; color: var(--ink-muted); font-weight: 300; }
+
+    /* ─── WEEKLY PLAN ─── */
+    .weekly-plan {
+      border: 1px solid var(--ink); margin-bottom: 3.5rem;
+    }
+    .wp-header {
+      background: var(--ink); color: var(--paper);
+      padding: 1rem 2rem; display: flex; align-items: baseline; gap: 1.5rem;
+    }
+    .wp-header h4 { font-size: 0.88rem; font-weight: 600; }
+    .wp-header span {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem;
+      color: var(--ink-muted); letter-spacing: 0.1em;
+    }
+    .wp-row {
+      display: grid; grid-template-columns: 3rem 1fr 1fr 1fr;
+      border-bottom: 1px solid var(--border);
+    }
+    .wp-row:last-child { border-bottom: none; }
+    .wp-row.header-row { background: var(--paper-dark); }
+    .wp-cell {
+      padding: 0.85rem 1.2rem; border-right: 1px solid var(--border);
+      font-size: 0.8rem; color: var(--ink-light); font-weight: 300; line-height: 1.4;
+    }
+    .wp-cell:last-child { border-right: none; }
+    .wp-cell.day {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem;
+      color: var(--red); font-weight: 500; display: flex;
+      align-items: center; justify-content: center; padding: 0;
+    }
+    .wp-cell.col-head {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem;
+      letter-spacing: 0.12em; color: var(--ink-muted); text-transform: uppercase;
+    }
+    .wp-cell.rest { color: var(--ink-muted); font-style: italic; }
+    .wp-cell.active { color: var(--ink); font-weight: 500; }
+
+    /* ─── PULLQUOTE ─── */
+    .pullquote {
+      border-left: 3px solid var(--red); padding: 1.5rem 2rem;
+      margin: 3.5rem 0; background: var(--paper-dark);
+    }
+    .pullquote blockquote {
+      font-size: 1.25rem; font-weight: 300; line-height: 1.7;
+      color: var(--ink); letter-spacing: 0.01em; margin-bottom: 0.6rem;
+    }
+    .pullquote cite {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem;
+      color: var(--ink-muted); letter-spacing: 0.12em; font-style: normal;
+    }
+
+    /* ─── LESSONS ─── */
+    .lesson-block { border: 1px solid var(--ink); margin-bottom: 1.5rem; }
+    .lesson-block:last-of-type { margin-bottom: 3.5rem; }
+    .lesson-header {
+      display: grid; grid-template-columns: auto 1fr auto;
+      align-items: center; border-bottom: 1px solid var(--border);
+      cursor: pointer; user-select: none; transition: background .15s;
+    }
+    .lesson-header:hover { background: var(--paper-dark); }
+    .lh-num {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem;
+      letter-spacing: 0.14em; color: var(--paper); background: var(--ink);
+      padding: 1.1rem 1.4rem; border-right: 1px solid var(--border);
+      align-self: stretch; display: flex; align-items: center;
+    }
+    .lesson-block.active .lh-num { background: var(--red); }
+    .lh-info { padding: 1.1rem 1.6rem; }
+    .lh-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.2rem; }
+    .lh-sub { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; color: var(--ink-muted); letter-spacing: 0.06em; }
+    .lh-toggle {
+      padding: 1.1rem 1.6rem; border-left: 1px solid var(--border);
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem;
+      color: var(--ink-muted); display: flex; align-items: center; gap: 0.5rem; white-space: nowrap;
+    }
+    .toggle-arrow { display: inline-block; transition: transform .25s ease; font-style: normal; }
+    .lesson-block.active .toggle-arrow { transform: rotate(90deg); }
+    .lesson-body { display: none; grid-template-columns: 1fr 1fr; }
+    .lesson-block.active .lesson-body { display: grid; }
+    .lb-content { padding: 2rem 2.2rem; border-right: 1px solid var(--border); }
+    .lb-content h4 {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem;
+      letter-spacing: 0.2em; color: var(--red); text-transform: uppercase; margin-bottom: 0.9rem;
+    }
+    .lb-content p {
+      font-size: 0.86rem; line-height: 1.9; color: var(--ink-light);
+      font-weight: 300; margin-bottom: 1.2rem;
+    }
+    .lb-content p:last-child { margin-bottom: 0; }
+    .lb-points { padding: 2rem 2.2rem; background: var(--paper-dark); }
+    .lb-points h4 {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem;
+      letter-spacing: 0.2em; color: var(--red); text-transform: uppercase; margin-bottom: 0.9rem;
+    }
+    .point-list { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+    .point-list li {
+      font-size: 0.84rem; line-height: 1.55; color: var(--ink-light);
+      padding-left: 1.2rem; position: relative; font-weight: 300;
+    }
+    .point-list li::before {
+      content: '—'; position: absolute; left: 0;
+      color: var(--red); font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem;
+    }
+    .lb-action {
+      grid-column: span 2; border-top: 1px solid var(--border);
+      padding: 1.4rem 2.2rem; display: flex; align-items: center; gap: 1.5rem;
+    }
+    .lb-action .act-label {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem;
+      letter-spacing: 0.18em; color: var(--red); text-transform: uppercase; flex-shrink: 0;
+    }
+    .lb-action .act-text {
+      font-size: 0.82rem; color: var(--ink-light); font-weight: 300; line-height: 1.5; flex: 1;
+    }
+    .lb-action .act-time {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; color: var(--ink-muted); flex-shrink: 0;
+    }
+
+    /* ─── UNIT NAV ─── */
+    .unit-nav { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--ink); margin-bottom: 3.5rem; }
+    .un-prev, .un-next {
+      padding: 1.5rem 2rem; text-decoration: none;
+      color: inherit; display: block; transition: background .15s;
+    }
+    .un-next { border-left: 1px solid var(--border); text-align: right; }
+    .un-prev:hover, .un-next:hover { background: var(--paper-dark); }
+    .un-label {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem;
+      letter-spacing: 0.18em; color: var(--ink-muted); text-transform: uppercase;
+      display: block; margin-bottom: 0.3rem;
+    }
+    .un-title { font-size: 0.9rem; font-weight: 600; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 2px solid var(--ink); padding: 1.2rem 2.5rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    footer span {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem;
+      color: var(--ink-muted); letter-spacing: 0.08em;
+    }
+    footer .f-red { color: var(--red); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 860px) {
+      .masthead { grid-template-columns: 1fr; }
+      .mast-rule, .mast-stats { display: none; }
+      .wrap { padding: 2rem 1.4rem; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-main { border-right: none; border-bottom: 1px solid var(--border); padding: 2rem 1.8rem; }
+      .hero-main h2 { font-size: 2rem; }
+      .hero-aside { display: none; }
+      .framework { grid-template-columns: 1fr 1fr; }
+      .fw-item:nth-child(2n) { border-right: none; }
+      .fw-item:nth-child(n+3) { border-top: 1px solid var(--border); }
+      .science-grid { grid-template-columns: 1fr; }
+      .sg-panel:first-child { border-right: none; border-bottom: 1px solid var(--border); }
+      .wp-row { grid-template-columns: 2.5rem 1fr 1fr; }
+      .wp-cell:nth-child(4), .wp-row.header-row .wp-cell:nth-child(4) { display: none; }
+      .lesson-body { grid-template-columns: 1fr; }
+      .lb-content { border-right: none; border-bottom: 1px solid var(--border); }
+      .lb-action { grid-column: span 1; flex-direction: column; align-items: flex-start; gap: 0.6rem; }
+      .unit-nav { grid-template-columns: 1fr; }
+      .un-next { border-left: none; border-top: 1px solid var(--border); text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── MASTHEAD ─── -->
+<header class="masthead">
+  <div class="mast-brand">
+    <span class="vol">Personal Mgmt. Vol.01</span>
+    <h1>個人管理學苑</h1>
+    <span class="tagline">Time · Life · Reading · Work · Weight · Finance · Growth</span>
+  </div>
+  <div class="mast-rule"></div>
+  <div class="mast-stats">
+    <div class="stat">
+      <span class="stat-n">05<em>模</em></span>
+      <span class="stat-l">體重管理</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-n">06<em>節</em></span>
+      <span class="stat-l">學習單元</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-n">3.5<em>h</em></span>
+      <span class="stat-l">預估時數</span>
+    </div>
+  </div>
+</header>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <a href="index.html">目錄</a>
+  <a href="unit-time.html">時間管理</a>
+  <a href="unit-life.html">生活管理</a>
+  <a href="unit-reading.html">閱讀管理</a>
+  <a href="unit-work.html">工作管理</a>
+  <a href="unit-weight.html" class="active">體重管理</a>
+  <a href="unit-finance.html">理財管理</a>
+  <a href="unit-growth.html">提升自我</a>
+</nav>
+
+<div class="wrap">
+
+  <!-- ─── HERO ─── -->
+  <section class="hero">
+    <div class="hero-main">
+      <div class="breadcrumb">
+        <a href="index.html">個人管理學苑</a>
+        <span class="sep">/</span>
+        <span class="cur">Module 05</span>
+      </div>
+      <h2>體重管理<br><span>身體自主權</span></h2>
+      <p class="lead">
+        體重管理從來不是意志力的問題，而是知識與系統的問題。當你理解熱量平衡的科學、學會用數據而非感覺做決定、設計出可持續的飲食與運動習慣，身體的改變就會成為你可以掌控的結果，而非隨機的運氣。
+      </p>
+      <div class="hero-meta">
+        <div class="hm-item">
+          <span class="hm-label">難度</span>
+          <span class="hm-val">入門 → 中級</span>
+        </div>
+        <div class="hm-item">
+          <span class="hm-label">建議節奏</span>
+          <span class="hm-val">每週 1 節</span>
+        </div>
+        <div class="hm-item">
+          <span class="hm-label">核心工具</span>
+          <span class="hm-val">飲食記錄 · 體重追蹤表 · 運動計畫</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-aside">
+      <div class="aside-lesson">
+        <span class="al-num">L01</span>
+        <div class="al-title">現況盤點與目標設定</div>
+      </div>
+      <div class="aside-lesson">
+        <span class="al-num">L02</span>
+        <div class="al-title">熱量科學：TDEE 與熱量缺口</div>
+      </div>
+      <div class="aside-lesson">
+        <span class="al-num">L03</span>
+        <div class="al-title">飲食記錄與三大營養素</div>
+      </div>
+      <div class="aside-lesson">
+        <span class="al-num">L04</span>
+        <div class="al-title">運動計畫設計與執行</div>
+      </div>
+      <div class="aside-lesson">
+        <span class="al-num">L05</span>
+        <div class="al-title">睡眠、壓力與荷爾蒙的影響</div>
+      </div>
+      <div class="aside-lesson">
+        <span class="al-num">L06</span>
+        <div class="al-title">長期維持與體重高原突破</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FRAMEWORK ─── -->
+  <div class="sh">
+    <h3>核心觀念框架</h3>
+    <div class="sh-line"></div>
+  </div>
+  <div class="framework">
+    <div class="fw-item">
+      <span class="fw-label">Concept 01</span>
+      <div class="fw-title">熱量平衡</div>
+      <p class="fw-desc">攝入熱量少於消耗熱量則減重，反之增重。這是體重管理最根本、最不可繞過的科學原則。</p>
+    </div>
+    <div class="fw-item">
+      <span class="fw-label">Concept 02</span>
+      <div class="fw-title">數據思維</div>
+      <p class="fw-desc">不靠感覺，靠數字。記錄飲食、追蹤體重趨勢，讓數據告訴你什麼有效、什麼無效。</p>
+    </div>
+    <div class="fw-item">
+      <span class="fw-label">Concept 03</span>
+      <div class="fw-title">可持續性</div>
+      <p class="fw-desc">最好的飲食計畫是你能長期執行的那一個。極端方法短期有效，長期必然反彈。</p>
+    </div>
+    <div class="fw-item">
+      <span class="fw-label">Concept 04</span>
+      <div class="fw-title">整體健康</div>
+      <p class="fw-desc">體重只是健康的其中一個指標。睡眠品質、肌肉量、精力水平同樣重要，不能只盯著數字。</p>
+    </div>
+  </div>
+
+  <!-- ─── SCIENCE TABLE ─── -->
+  <div class="sh">
+    <h3>熱量科學基礎</h3>
+    <div class="sh-line"></div>
+    <span class="sh-note">了解原理，才能做出正確決策</span>
+  </div>
+  <div class="science-grid">
+    <div class="sg-panel">
+      <h4>// TDEE 計算框架</h4>
+      <div class="formula-block">
+        <span class="f-label">基礎代謝率 BMR（Mifflin-St Jeor）</span>
+        <div class="f-eq">
+          男：<em>10×體重(kg) + 6.25×身高(cm) − 5×年齡 + 5</em><br>
+          女：<em>10×體重(kg) + 6.25×身高(cm) − 5×年齡 − 161</em>
+        </div>
+      </div>
+      <div class="formula-block">
+        <span class="f-label">每日總消耗熱量 TDEE = BMR × 活動係數</span>
+        <div class="f-eq">
+          久坐（幾乎不運動）：<em>×1.2</em><br>
+          輕度活動（每週 1–3 天）：<em>×1.375</em><br>
+          中度活動（每週 3–5 天）：<em>×1.55</em><br>
+          高度活動（每週 6–7 天）：<em>×1.725</em>
+        </div>
+      </div>
+      <p class="sg-note">TDEE 是你「維持體重」所需的熱量。減重時攝入 TDEE − 300 至 500 大卡，每週約可減 0.3–0.5 公斤。</p>
+    </div>
+    <div class="sg-panel">
+      <h4>// 三大營養素</h4>
+      <div class="macro-row">
+        <div>
+          <div class="macro-name">蛋白質</div>
+          <div class="macro-note">保留肌肉、增加飽足感</div>
+        </div>
+        <div class="macro-kcal">4 kcal/g</div>
+      </div>
+      <div class="macro-row">
+        <div>
+          <div class="macro-name">碳水化合物</div>
+          <div class="macro-note">主要能量來源、支撐運動表現</div>
+        </div>
+        <div class="macro-kcal">4 kcal/g</div>
+      </div>
+      <div class="macro-row">
+        <div>
+          <div class="macro-name">脂肪</div>
+          <div class="macro-note">荷爾蒙合成、脂溶性維生素吸收</div>
+        </div>
+        <div class="macro-kcal">9 kcal/g</div>
+      </div>
+      <div class="macro-row">
+        <div>
+          <div class="macro-name">酒精</div>
+          <div class="macro-note">空熱量，無營養價值</div>
+        </div>
+        <div class="macro-kcal">7 kcal/g</div>
+      </div>
+      <p class="sg-note" style="margin-top:1rem;">減脂期蛋白質建議：體重 × 1.6–2.2 g/天。充足蛋白質是維持肌肉量、不反彈的關鍵。</p>
+    </div>
+  </div>
+
+  <!-- ─── PULLQUOTE ─── -->
+  <div class="pullquote">
+    <blockquote>「你不需要完美的飲食計畫，你需要一個你能持續執行的計畫。80% 的執行，強過 100% 完美但只做三天。」</blockquote>
+    <cite>— 改編自 James Clear, Atomic Habits</cite>
+  </div>
+
+  <!-- ─── WEEKLY TRAINING PLAN ─── -->
+  <div class="sh">
+    <h3>入門運動週計畫範本</h3>
+    <div class="sh-line"></div>
+    <span class="sh-note">適合從零開始的初學者，可依個人狀況調整</span>
+  </div>
+  <div class="weekly-plan">
+    <div class="wp-header">
+      <h4>每週訓練安排建議</h4>
+      <span>有氧 + 肌力 + 休息的平衡配置</span>
+    </div>
+    <div class="wp-row header-row">
+      <div class="wp-cell col-head" style="display:flex;align-items:center;justify-content:center;padding:0.85rem 0;">日</div>
+      <div class="wp-cell col-head">訓練類型</div>
+      <div class="wp-cell col-head">時長 / 強度</div>
+      <div class="wp-cell col-head">說明</div>
+    </div>
+    <div class="wp-row">
+      <div class="wp-cell day">一</div>
+      <div class="wp-cell active">肌力訓練 — 上半身</div>
+      <div class="wp-cell">40–50 分鐘 / 中強度</div>
+      <div class="wp-cell">胸、肩、背、手臂，3 組×10–12 下</div>
+    </div>
+    <div class="wp-row">
+      <div class="wp-cell day">二</div>
+      <div class="wp-cell active">有氧訓練</div>
+      <div class="wp-cell">30–40 分鐘 / 低中強度</div>
+      <div class="wp-cell">快走、慢跑或騎自行車，維持能說話的心率</div>
+    </div>
+    <div class="wp-row">
+      <div class="wp-cell day">三</div>
+      <div class="wp-cell rest">主動休息</div>
+      <div class="wp-cell rest">20–30 分鐘</div>
+      <div class="wp-cell rest">伸展、瑜伽或輕鬆散步</div>
+    </div>
+    <div class="wp-row">
+      <div class="wp-cell day">四</div>
+      <div class="wp-cell active">肌力訓練 — 下半身</div>
+      <div class="wp-cell">40–50 分鐘 / 中強度</div>
+      <div class="wp-cell">深蹲、硬舉、弓步、小腿訓練</div>
+    </div>
+    <div class="wp-row">
+      <div class="wp-cell day">五</div>
+      <div class="wp-cell active">HIIT 或有氧</div>
+      <div class="wp-cell">20–30 分鐘 / 高強度</div>
+      <div class="wp-cell">間歇訓練：30 秒全力 + 30 秒休息 × 10–15 組</div>
+    </div>
+    <div class="wp-row">
+      <div class="wp-cell day">六</div>
+      <div class="wp-cell active">肌力訓練 — 全身</div>
+      <div class="wp-cell">45–60 分鐘 / 中強度</div>
+      <div class="wp-cell">複合動作為主：深蹲、硬舉、推、拉</div>
+    </div>
+    <div class="wp-row">
+      <div class="wp-cell day">日</div>
+      <div class="wp-cell rest">完全休息</div>
+      <div class="wp-cell rest">—</div>
+      <div class="wp-cell rest">充足睡眠與恢復，為下週做準備</div>
+    </div>
+  </div>
+
+  <!-- ─── LESSONS ─── -->
+  <div class="sh">
+    <h3>課程單元</h3>
+    <div class="sh-line"></div>
+    <span class="sh-note">點擊展開內容</span>
+  </div>
+
+  <!-- L01 -->
+  <div class="lesson-block active" id="l01">
+    <div class="lesson-header" onclick="toggleLesson('l01')">
+      <span class="lh-num">L01</span>
+      <div class="lh-info">
+        <div class="lh-title">現況盤點與目標設定</div>
+        <div class="lh-sub">Body Audit · 35 min</div>
+      </div>
+      <div class="lh-toggle">展開 <i class="toggle-arrow">›</i></div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>改變身體之前，先如實記錄現在的身體狀態。體重、腰圍、體脂率、每天的飲食習慣、運動頻率、睡眠時數——這些數字組合在一起，才是你真正的健康起點，而不是鏡子裡的模糊印象。</p>
+        <p>本單元帶你完成「身體現況盤點」，設定符合科學的目標（而非受廣告或他人影響的不切實際期待），並確認你願意承諾的改變範圍——飲食調整、運動頻率、追蹤方式。目標的品質決定了後續努力的方向。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>基礎測量：體重、BMI、腰圍、體脂率（估算）</li>
+          <li>飲食習慣自評：外食比例、零食頻率、飲酒量、蔬菜攝取</li>
+          <li>運動現況：每週頻率、類型、強度</li>
+          <li>設定 SMART 目標：數字化、有截止日、可衡量</li>
+          <li>健康減重速率：每週 0.3–0.5 公斤為安全範圍</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">早晨空腹測量體重、腰圍，並用手機 App（如 MyFitnessPal）或紙本記錄今日所有飲食。不需要改變任何行為，只是如實記錄，建立你的「第一天基準線」。</span>
+        <span class="act-time">作業時間：1 天記錄</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- L02 -->
+  <div class="lesson-block" id="l02">
+    <div class="lesson-header" onclick="toggleLesson('l02')">
+      <span class="lh-num">L02</span>
+      <div class="lh-info">
+        <div class="lh-title">熱量科學：TDEE 與熱量缺口</div>
+        <div class="lh-sub">Energy Balance · 40 min</div>
+      </div>
+      <div class="lh-toggle">展開 <i class="toggle-arrow">›</i></div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>「少吃多動」這個道理人人都懂，但為什麼執行那麼難？關鍵在於大多數人不知道自己該「少吃多少」、「多動多少」。沒有數字的目標只是願望，不是計畫。</p>
+        <p>本單元帶你計算個人的 TDEE（每日總消耗熱量），理解熱量缺口的設定原則，並破解常見的減重迷思——為什麼「不吃」反而讓你更難瘦、為什麼體重會短暫波動、為什麼體重計不是唯一的指標。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>計算你的 BMR（基礎代謝率）與 TDEE</li>
+          <li>熱量缺口設定：建議每日減少 300–500 大卡</li>
+          <li>為什麼攝入過少會降低代謝率（代謝適應）</li>
+          <li>體重波動的正常原因：水分、消化內容物、荷爾蒙</li>
+          <li>追蹤的是「7 天移動平均值」，而非單日體重</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">使用 Mifflin-St Jeor 公式計算你的 BMR，再乘以活動係數得出 TDEE。設定你的每日目標攝入熱量（TDEE 減去 350–500 大卡），並在飲食記錄 App 中設定這個數字作為每日目標。</span>
+        <span class="act-time">作業時間：30 分鐘計算 + 設定</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- L03 -->
+  <div class="lesson-block" id="l03">
+    <div class="lesson-header" onclick="toggleLesson('l03')">
+      <span class="lh-num">L03</span>
+      <div class="lh-info">
+        <div class="lh-title">飲食記錄與三大營養素</div>
+        <div class="lh-sub">Nutrition Tracking · 40 min</div>
+      </div>
+      <div class="lh-toggle">展開 <i class="toggle-arrow">›</i></div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>研究一再顯示：有記錄飲食習慣的人，比沒有記錄的人減去更多體重，且更容易長期維持。記錄飲食不是為了讓自己焦慮，而是讓你在做選擇時有意識，打破「忘記自己吃了什麼」的盲點。</p>
+        <p>本單元聚焦於實際可操作的飲食記錄方法，包含如何快速估算食物熱量、如何設定合理的三大營養素目標、以及「80/20 原則」在飲食中的應用——你不需要完美，只需要夠好。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>飲食記錄工具選擇：MyFitnessPal / Cronometer / 紙本食物日誌</li>
+          <li>蛋白質優先原則：每日目標體重(kg) × 1.6–2g</li>
+          <li>台灣常見食物熱量速查：便當、麵食、飲料的熱量陷阱</li>
+          <li>外食策略：如何在不自己煮的情況下控制熱量</li>
+          <li>飲食記錄的 80/20：記錄 80% 就足夠，不必追求完美</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">連續七天完整記錄每日飲食，包含所有飲料和零食。不需要改變飲食內容，只是記錄。七天後分析：你最大的熱量來源是什麼？哪一餐最容易超標？找出一個最容易調整的地方。</span>
+        <span class="act-time">作業時間：7 天記錄 + 30 分鐘分析</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- L04 -->
+  <div class="lesson-block" id="l04">
+    <div class="lesson-header" onclick="toggleLesson('l04')">
+      <span class="lh-num">L04</span>
+      <div class="lh-info">
+        <div class="lh-title">運動計畫設計與執行</div>
+        <div class="lh-sub">Exercise Planning · 45 min</div>
+      </div>
+      <div class="lh-toggle">展開 <i class="toggle-arrow">›</i></div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>運動對體重管理的最大貢獻，並非燃燒大量熱量（你跑步 30 分鐘消耗的熱量，往往被一瓶手搖飲輕鬆補回），而是維持與增加肌肉量——讓你的基礎代謝率長期提高，讓身體變成更有效率的「燃脂機器」。</p>
+        <p>本單元帶你設計一份適合初學者的運動週計畫，結合有氧與肌力訓練，並強調漸進式超負荷（Progressive Overload）的原則——讓身體持續進步，避免停滯。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>有氧訓練 vs. 肌力訓練的減脂效果比較</li>
+          <li>肌肉量的重要性：每增加 1 公斤肌肉，每日多消耗約 13 大卡</li>
+          <li>漸進式超負荷：每週增加重量、次數或組數的系統化進步方式</li>
+          <li>初學者訓練頻率建議：每週肌力訓練 2–3 次，有氧 2–3 次</li>
+          <li>如何讓運動成為習慣而非任務（附在現有例程上）</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">根據本節的週計畫範本，設計你的個人版本：確定每週運動天數、類型、時長，並把它們放進行事曆。選擇一個本週就能開始的訓練動作（如每天 10 下深蹲），完成你的第一次訓練並記錄。</span>
+        <span class="act-time">作業時間：1 小時設計 + 持續執行</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- L05 -->
+  <div class="lesson-block" id="l05">
+    <div class="lesson-header" onclick="toggleLesson('l05')">
+      <span class="lh-num">L05</span>
+      <div class="lh-info">
+        <div class="lh-title">睡眠、壓力與荷爾蒙的影響</div>
+        <div class="lh-sub">Hidden Variables · 40 min</div>
+      </div>
+      <div class="lh-toggle">展開 <i class="toggle-arrow">›</i></div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>你有沒有遇過這樣的情況：飲食控制得很好，也有在運動，但體重就是紋絲不動，甚至還升高了？除了熱量計算，還有幾個強力影響體重的「隱藏變數」：睡眠不足、慢性壓力、以及荷爾蒙失衡。</p>
+        <p>研究顯示，睡眠不足 6 小時的人，飢餓素（Ghrelin）上升，飽足感荷爾蒙（Leptin）下降，導致大腦渴望高熱量食物。而長期壓力造成的皮質醇升高，則促進脂肪囤積，尤其是腹部。這些因素不調整，再嚴格的飲食計畫效果都會打折。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>睡眠與食慾荷爾蒙：飢餓素 vs. 瘦素的作用機制</li>
+          <li>皮質醇與腹部脂肪：壓力如何讓你更難瘦</li>
+          <li>改善睡眠品質的具體方法（回顧生活管理模組）</li>
+          <li>壓力管理策略對體重控制的直接幫助</li>
+          <li>女性月經週期對體重波動的影響與追蹤方法</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">本週增加一項「體重管理輔助習慣」：選擇 (A) 把睡眠時間延長 30 分鐘，或 (B) 每天增加 10 分鐘的靜態伸展或冥想。持續一週，記錄這個改變對你的食慾、體力與體重趨勢有無影響。</span>
+        <span class="act-time">作業時間：7 天觀察</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- L06 -->
+  <div class="lesson-block" id="l06">
+    <div class="lesson-header" onclick="toggleLesson('l06')">
+      <span class="lh-num">L06</span>
+      <div class="lh-info">
+        <div class="lh-title">長期維持與體重高原突破</div>
+        <div class="lh-sub">Long-term Strategy · 35 min</div>
+      </div>
+      <div class="lh-toggle">展開 <i class="toggle-arrow">›</i></div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>減重最容易的部分是開始，最難的部分是抵達目標後不反彈——以及在過程中遇到「體重高原」時不放棄。體重高原（Weight Loss Plateau）是幾乎每個人都會遇到的現象：持續執行計畫，但體重停滯不動長達 2–4 週。</p>
+        <p>這不是失敗的訊號，而是身體代謝適應的正常反應。本單元提供三種突破高原的策略，以及建立「維持期」心態的方法——讓你在達到目標後，把新的體重變成新的正常，而不是等著反彈回去。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>體重高原的生理原因：代謝適應與 NEAT 降低</li>
+          <li>三種高原突破策略：重新計算 TDEE / 增加運動強度 / 飲食重組</li>
+          <li>「飲食假期」（Diet Break）：每隔 8–12 週回到維持熱量 1–2 週</li>
+          <li>從減脂期過渡到維持期的心態與行為調整</li>
+          <li>體重管理的長期追蹤：每週量一次，看趨勢不看單日</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">為自己設計一份「達標後維持計畫」：當你達到目標體重後，你打算如何調整熱量攝入？哪些飲食與運動習慣是你願意長期保持的？把這份計畫寫下來，它會是你未來最重要的防反彈錨點。</span>
+        <span class="act-time">作業時間：45 分鐘</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── UNIT NAV ─── -->
+  <div class="unit-nav">
+    <a href="unit-work.html" class="un-prev">
+      <span class="un-label">← 上一模組</span>
+      <div class="un-title">工作管理 · Module 04</div>
+    </a>
+    <a href="unit-finance.html" class="un-next">
+      <span class="un-label">下一模組 →</span>
+      <div class="un-title">理財管理 · Module 06</div>
+    </a>
+  </div>
+
+</div>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <span>個人管理學苑 &nbsp;·&nbsp; <span class="f-red">Module 05</span> &nbsp;·&nbsp; 體重管理</span>
+  <span>6 Lessons · 3.5h</span>
+</footer>
+
+<script>
+  function toggleLesson(id) {
+    const block = document.getElementById(id);
+    const isActive = block.classList.contains('active');
+    document.querySelectorAll('.lesson-block').forEach(b => b.classList.remove('active'));
+    if (!isActive) block.classList.add('active');
+  }
+</script>
+
+</body>
+</html>

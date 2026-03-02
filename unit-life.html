@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>生活管理 — 個人管理學苑</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper:      #f5f0e8;
+      --paper-dark: #ece7de;
+      --paper-deep: #e4ddd3;
+      --ink:        #1a1612;
+      --ink-light:  #4a4540;
+      --ink-muted:  #8a847c;
+      --red:        #bf3b2b;
+      --border:     #ccc5b8;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Noto Serif TC', serif;
+      min-height: 100vh;
+    }
+
+    /* ─── MASTHEAD ─── */
+    .masthead {
+      border-bottom: 2.5px solid var(--ink);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: stretch;
+    }
+    .mast-brand {
+      padding: 1.8rem 2.5rem;
+      border-right: 1px solid var(--border);
+    }
+    .mast-brand .vol {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.22em;
+      color: var(--red);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.35rem;
+    }
+    .mast-brand h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+    .mast-brand .tagline {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--ink-muted);
+      letter-spacing: 0.07em;
+      margin-top: 0.45rem;
+      display: block;
+    }
+    .mast-rule {
+      background: repeating-linear-gradient(
+        90deg,
+        transparent 0, transparent 6px,
+        var(--border) 6px, var(--border) 7px
+      );
+      margin: 1.5rem 0;
+    }
+    .mast-stats {
+      display: flex;
+      align-items: center;
+      padding: 0 2.5rem;
+      gap: 2.5rem;
+      border-left: 1px solid var(--border);
+    }
+    .stat { text-align: center; }
+    .stat-n {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 1.6rem;
+      font-weight: 300;
+      line-height: 1;
+      display: block;
+    }
+    .stat-n em { font-style: normal; font-size: 0.85rem; color: var(--red); }
+    .stat-l {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      color: var(--ink-muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-top: 0.2rem;
+      display: block;
+    }
+    .stat-divider { width: 1px; height: 2rem; background: var(--border); }
+
+    /* ─── NAV ─── */
+    nav {
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      overflow-x: auto;
+      padding: 0 2rem;
+    }
+    nav a {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--ink-light);
+      padding: 0.75rem 1.2rem;
+      border-right: 1px solid var(--border);
+      white-space: nowrap;
+      transition: background .15s, color .15s;
+      flex-shrink: 0;
+    }
+    nav a:first-child { border-left: 1px solid var(--border); }
+    nav a:hover  { background: var(--ink); color: var(--paper); }
+    nav a.active { background: var(--red); color: var(--paper); }
+
+    /* ─── LAYOUT ─── */
+    .wrap {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 3rem 2.5rem;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      border: 1px solid var(--ink);
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      margin-bottom: 3.5rem;
+    }
+    .hero-main {
+      padding: 3rem 3rem 2.5rem;
+      border-right: 1px solid var(--border);
+    }
+    .breadcrumb {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1.2rem;
+    }
+    .breadcrumb a { color: var(--ink-muted); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--red); }
+    .breadcrumb .sep { color: var(--border); }
+    .breadcrumb .cur { color: var(--red); }
+    .hero-main h2 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.15;
+      margin-bottom: 1.2rem;
+    }
+    .hero-main h2 span { color: var(--red); }
+    .hero-main .lead {
+      font-size: 0.92rem;
+      line-height: 1.95;
+      color: var(--ink-light);
+      font-weight: 300;
+      max-width: 560px;
+    }
+    .hero-meta {
+      display: flex;
+      gap: 2rem;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .hm-item {}
+    .hm-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.16em;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    .hm-val {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.82rem;
+      color: var(--ink);
+    }
+    .hero-aside {
+      background: var(--paper-dark);
+      padding: 2.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .aside-lesson {
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+    }
+    .aside-lesson:first-child { padding-top: 0; }
+    .aside-lesson:last-child { border-bottom: none; padding-bottom: 0; }
+    .al-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--red);
+      flex-shrink: 0;
+      letter-spacing: 0.1em;
+    }
+    .al-title {
+      font-size: 0.82rem;
+      font-weight: 500;
+      line-height: 1.3;
+    }
+
+    /* ─── SECTION HEADER ─── */
+    .sh {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.8rem;
+    }
+    .sh h3 { font-size: 0.95rem; font-weight: 500; white-space: nowrap; }
+    .sh-line { flex: 1; height: 1px; background: var(--border); }
+    .sh-note {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--ink-muted);
+    }
+
+    /* ─── FRAMEWORK ─── */
+    .framework {
+      border: 1px solid var(--ink);
+      margin-bottom: 3.5rem;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .fw-item {
+      padding: 1.8rem 1.6rem;
+      border-right: 1px solid var(--border);
+    }
+    .fw-item:last-child { border-right: none; }
+    .fw-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.16em;
+      color: var(--red);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    .fw-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      line-height: 1.2;
+    }
+    .fw-desc {
+      font-size: 0.78rem;
+      color: var(--ink-light);
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    /* ─── PULLQUOTE ─── */
+    .pullquote {
+      border-left: 3px solid var(--red);
+      padding: 1.5rem 2rem;
+      margin: 3.5rem 0;
+      background: var(--paper-dark);
+    }
+    .pullquote blockquote {
+      font-size: 1.25rem;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--ink);
+      letter-spacing: 0.01em;
+      margin-bottom: 0.6rem;
+    }
+    .pullquote cite {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--ink-muted);
+      letter-spacing: 0.12em;
+      font-style: normal;
+    }
+
+    /* ─── LESSONS ─── */
+    .lesson-block {
+      border: 1px solid var(--ink);
+      margin-bottom: 1.5rem;
+    }
+    .lesson-block:last-of-type { margin-bottom: 3.5rem; }
+
+    .lesson-header {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+      transition: background .15s;
+    }
+    .lesson-header:hover { background: var(--paper-dark); }
+
+    .lh-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      color: var(--paper);
+      background: var(--ink);
+      padding: 1.1rem 1.4rem;
+      border-right: 1px solid var(--border);
+      align-self: stretch;
+      display: flex;
+      align-items: center;
+    }
+    .lesson-block.active .lh-num { background: var(--red); }
+
+    .lh-info { padding: 1.1rem 1.6rem; }
+    .lh-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.2rem;
+    }
+    .lh-sub {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--ink-muted);
+      letter-spacing: 0.06em;
+    }
+
+    .lh-toggle {
+      padding: 1.1rem 1.6rem;
+      border-left: 1px solid var(--border);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--ink-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+    }
+    .toggle-arrow {
+      display: inline-block;
+      transition: transform .25s ease;
+      font-style: normal;
+    }
+    .lesson-block.active .toggle-arrow { transform: rotate(90deg); }
+
+    .lesson-body {
+      display: none;
+      grid-template-columns: 1fr 1fr;
+    }
+    .lesson-block.active .lesson-body { display: grid; }
+
+    .lb-content {
+      padding: 2rem 2.2rem;
+      border-right: 1px solid var(--border);
+    }
+    .lb-content h4 {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--red);
+      text-transform: uppercase;
+      margin-bottom: 0.9rem;
+    }
+    .lb-content p {
+      font-size: 0.86rem;
+      line-height: 1.9;
+      color: var(--ink-light);
+      font-weight: 300;
+      margin-bottom: 1.2rem;
+    }
+    .lb-content p:last-child { margin-bottom: 0; }
+
+    .lb-points {
+      padding: 2rem 2.2rem;
+      background: var(--paper-dark);
+    }
+    .lb-points h4 {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--red);
+      text-transform: uppercase;
+      margin-bottom: 0.9rem;
+    }
+    .point-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+    .point-list li {
+      font-size: 0.84rem;
+      line-height: 1.55;
+      color: var(--ink-light);
+      padding-left: 1.2rem;
+      position: relative;
+      font-weight: 300;
+    }
+    .point-list li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--red);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.75rem;
+    }
+
+    .lb-action {
+      grid-column: span 2;
+      border-top: 1px solid var(--border);
+      padding: 1.4rem 2.2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .lb-action .act-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      color: var(--red);
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+    .lb-action .act-text {
+      font-size: 0.82rem;
+      color: var(--ink-light);
+      font-weight: 300;
+      line-height: 1.5;
+      flex: 1;
+    }
+    .lb-action .act-time {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--ink-muted);
+      flex-shrink: 0;
+    }
+
+    /* ─── ROUTINE TABLE ─── */
+    .routine-grid {
+      border: 1px solid var(--ink);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      margin-bottom: 3.5rem;
+    }
+    .routine-col {
+      padding: 2rem 2.2rem;
+    }
+    .routine-col:first-child {
+      border-right: 1px solid var(--border);
+    }
+    .routine-col h4 {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--red);
+      text-transform: uppercase;
+      margin-bottom: 1.2rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .routine-item {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px dashed var(--border);
+    }
+    .routine-item:last-child { border-bottom: none; }
+    .ri-time {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--ink-muted);
+      flex-shrink: 0;
+      width: 3.5rem;
+    }
+    .ri-task {
+      font-size: 0.84rem;
+      color: var(--ink-light);
+      font-weight: 300;
+    }
+    .ri-dur {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--border);
+      margin-left: auto;
+    }
+
+    /* ─── UNIT NAV ─── */
+    .unit-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1px solid var(--ink);
+      margin-bottom: 3.5rem;
+    }
+    .un-prev, .un-next {
+      padding: 1.5rem 2rem;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: background .15s;
+    }
+    .un-next { border-left: 1px solid var(--border); text-align: right; }
+    .un-prev:hover, .un-next:hover { background: var(--paper-dark); }
+    .un-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+    .un-title { font-size: 0.9rem; font-weight: 600; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 2px solid var(--ink);
+      padding: 1.2rem 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    footer span {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--ink-muted);
+      letter-spacing: 0.08em;
+    }
+    footer .f-red { color: var(--red); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 860px) {
+      .masthead { grid-template-columns: 1fr; }
+      .mast-rule, .mast-stats { display: none; }
+      .wrap { padding: 2rem 1.4rem; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-main { border-right: none; border-bottom: 1px solid var(--border); padding: 2rem 1.8rem; }
+      .hero-main h2 { font-size: 2rem; }
+      .hero-aside { display: none; }
+      .lesson-body { grid-template-columns: 1fr; }
+      .lb-content { border-right: none; border-bottom: 1px solid var(--border); }
+      .lb-action { grid-column: span 1; flex-direction: column; align-items: flex-start; gap: 0.6rem; }
+      .framework { grid-template-columns: 1fr 1fr; }
+      .fw-item:nth-child(2n) { border-right: none; }
+      .fw-item:nth-child(n+3) { border-top: 1px solid var(--border); }
+      .routine-grid { grid-template-columns: 1fr; }
+      .routine-col:first-child { border-right: none; border-bottom: 1px solid var(--border); }
+      .unit-nav { grid-template-columns: 1fr; }
+      .un-next { border-left: none; border-top: 1px solid var(--border); text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── MASTHEAD ─── -->
+<header class="masthead">
+  <div class="mast-brand">
+    <span class="vol">Personal Mgmt. Vol.01</span>
+    <h1>個人管理學苑</h1>
+    <span class="tagline">Time · Life · Reading · Work · Weight · Finance · Growth</span>
+  </div>
+  <div class="mast-rule"></div>
+  <div class="mast-stats">
+    <div class="stat">
+      <span class="stat-n">02<em>模</em></span>
+      <span class="stat-l">生活管理</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-n">06<em>節</em></span>
+      <span class="stat-l">學習單元</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-n">4<em>h</em></span>
+      <span class="stat-l">預估時數</span>
+    </div>
+  </div>
+</header>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <a href="index.html">目錄</a>
+  <a href="unit-time.html">時間管理</a>
+  <a href="unit-life.html" class="active">生活管理</a>
+  <a href="unit-reading.html">閱讀管理</a>
+  <a href="unit-work.html">工作管理</a>
+  <a href="unit-weight.html">體重管理</a>
+  <a href="unit-finance.html">理財管理</a>
+  <a href="unit-growth.html">提升自我</a>
+</nav>
+
+<div class="wrap">
+
+  <!-- ─── HERO ─── -->
+  <section class="hero">
+    <div class="hero-main">
+      <div class="breadcrumb">
+        <a href="index.html">個人管理學苑</a>
+        <span class="sep">/</span>
+        <span class="cur">Module 02</span>
+      </div>
+      <h2>生活管理<br><span>日常節律設計</span></h2>
+      <p class="lead">
+        生活管理不是讓你把每分鐘都填滿，而是設計一套可持續的日常骨架——讓好習慣自動發生，讓壞習慣難以出現。從晨間例程到環境設計，建立不靠意志力也能運作的生活系統。
+      </p>
+      <div class="hero-meta">
+        <div class="hm-item">
+          <span class="hm-label">難度</span>
+          <span class="hm-val">入門 → 中級</span>
+        </div>
+        <div class="hm-item">
+          <span class="hm-label">建議節奏</span>
+          <span class="hm-val">每週 1 節</span>
+        </div>
+        <div class="hm-item">
+          <span class="hm-label">核心工具</span>
+          <span class="hm-val">例程設計表 · 習慣追蹤 · 環境清單</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-aside">
+      <div class="aside-lesson">
+        <span class="al-num">L01</span>
+        <div class="al-title">生活現況盤點與理想日設計</div>
+      </div>
+      <div class="aside-lesson">
+        <span class="al-num">L02</span>
+        <div class="al-title">晨間例程：掌控一天的開端</div>
+      </div>
+      <div class="aside-lesson">
+        <span class="al-num">L03</span>
+        <div class="al-title">夜間例程：為明天做準備</div>
+      </div>
+      <div class="aside-lesson">
+        <span class="al-num">L04</span>
+        <div class="al-title">習慣堆疊與觸發設計</div>
+      </div>
+      <div class="aside-lesson">
+        <span class="al-num">L05</span>
+        <div class="al-title">環境設計：讓空間幫你做決定</div>
+      </div>
+      <div class="aside-lesson">
+        <span class="al-num">L06</span>
+        <div class="al-title">生活系統的維護與彈性</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FRAMEWORK ─── -->
+  <div class="sh">
+    <h3>核心觀念框架</h3>
+    <div class="sh-line"></div>
+  </div>
+  <div class="framework">
+    <div class="fw-item">
+      <span class="fw-label">Concept 01</span>
+      <div class="fw-title">節律設計</div>
+      <p class="fw-desc">好的生活需要可預測的節奏。固定的起床、飲食與睡眠時間是一切的基礎。</p>
+    </div>
+    <div class="fw-item">
+      <span class="fw-label">Concept 02</span>
+      <div class="fw-title">習慣科學</div>
+      <p class="fw-desc">習慣由提示、慣例、獎勵三部分組成。設計好迴路，行為就會自動發生。</p>
+    </div>
+    <div class="fw-item">
+      <span class="fw-label">Concept 03</span>
+      <div class="fw-title">環境力量</div>
+      <p class="fw-desc">改變環境比改變意志力更有效。讓好的選擇變容易，讓壞的選擇變困難。</p>
+    </div>
+    <div class="fw-item">
+      <span class="fw-label">Concept 04</span>
+      <div class="fw-title">最小可行系統</div>
+      <p class="fw-desc">系統要能在最差的狀況下仍可執行。複雜的計畫在壓力下最先崩潰。</p>
+    </div>
+  </div>
+
+  <!-- ─── IDEAL DAY ─── -->
+  <div class="sh">
+    <h3>理想日範本參考</h3>
+    <div class="sh-line"></div>
+    <span class="sh-note">可依個人作息調整</span>
+  </div>
+  <div class="routine-grid">
+    <div class="routine-col">
+      <h4>// 晨間例程 · Morning</h4>
+      <div class="routine-item">
+        <span class="ri-time">06:00</span>
+        <span class="ri-task">起床，不看手機，喝一杯水</span>
+        <span class="ri-dur">5m</span>
+      </div>
+      <div class="routine-item">
+        <span class="ri-time">06:05</span>
+        <span class="ri-task">輕度伸展或冥想</span>
+        <span class="ri-dur">10m</span>
+      </div>
+      <div class="routine-item">
+        <span class="ri-time">06:15</span>
+        <span class="ri-task">寫晨間日記 / 三件感謝</span>
+        <span class="ri-dur">10m</span>
+      </div>
+      <div class="routine-item">
+        <span class="ri-time">06:25</span>
+        <span class="ri-task">確認今日三大要事</span>
+        <span class="ri-dur">5m</span>
+      </div>
+      <div class="routine-item">
+        <span class="ri-time">06:30</span>
+        <span class="ri-task">早餐，不滑手機</span>
+        <span class="ri-dur">20m</span>
+      </div>
+      <div class="routine-item">
+        <span class="ri-time">06:50</span>
+        <span class="ri-task">進入第一個深度工作時段</span>
+        <span class="ri-dur">90m</span>
+      </div>
+    </div>
+    <div class="routine-col">
+      <h4>// 夜間例程 · Evening</h4>
+      <div class="routine-item">
+        <span class="ri-time">21:00</span>
+        <span class="ri-task">停止使用螢幕（數位宵禁）</span>
+        <span class="ri-dur">—</span>
+      </div>
+      <div class="routine-item">
+        <span class="ri-time">21:05</span>
+        <span class="ri-task">整理明日待辦，確認行事曆</span>
+        <span class="ri-dur">10m</span>
+      </div>
+      <div class="routine-item">
+        <span class="ri-time">21:15</span>
+        <span class="ri-task">閱讀實體書</span>
+        <span class="ri-dur">30m</span>
+      </div>
+      <div class="routine-item">
+        <span class="ri-time">21:45</span>
+        <span class="ri-task">今日覆盤：一件好事 / 一件改善</span>
+        <span class="ri-dur">5m</span>
+      </div>
+      <div class="routine-item">
+        <span class="ri-time">21:50</span>
+        <span class="ri-task">個人衛生，調暗燈光</span>
+        <span class="ri-dur">15m</span>
+      </div>
+      <div class="routine-item">
+        <span class="ri-time">22:00</span>
+        <span class="ri-task">就寢</span>
+        <span class="ri-dur">—</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── PULLQUOTE ─── -->
+  <div class="pullquote">
+    <blockquote>「你不會突然成為那個你想成為的人。你會成為你每天重複做的事情所塑造的那個人。」</blockquote>
+    <cite>— James Clear, Atomic Habits</cite>
+  </div>
+
+  <!-- ─── LESSONS ─── -->
+  <div class="sh">
+    <h3>課程單元</h3>
+    <div class="sh-line"></div>
+    <span class="sh-note">點擊展開內容</span>
+  </div>
+
+  <!-- L01 -->
+  <div class="lesson-block active" id="l01">
+    <div class="lesson-header" onclick="toggleLesson('l01')">
+      <span class="lh-num">L01</span>
+      <div class="lh-info">
+        <div class="lh-title">生活現況盤點與理想日設計</div>
+        <div class="lh-sub">Life Audit · 40 min</div>
+      </div>
+      <div class="lh-toggle">展開 <i class="toggle-arrow">›</i></div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>改變生活的第一步，是如實看見現在的生活。許多人對自己的日常有美化過的印象——以為自己睡得夠、吃得健康、有在運動，但實際數字往往令人意外。</p>
+        <p>本單元透過「生活現況盤點表」，從睡眠、飲食、運動、社交、獨處、學習六個面向，記錄並評估你目前的生活品質基準線。接著，設計你的「理想日」——不是完美的一天，而是你真正想要且可持續的一天。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>六大面向生活品質評分（睡眠 / 飲食 / 運動 / 社交 / 獨處 / 學習）</li>
+          <li>找出生活中最讓你不滿意的三個領域</li>
+          <li>設計「理想日時間表」——從起床到就寢</li>
+          <li>理想日 vs. 現實日的差距分析</li>
+          <li>設定本模組的個人改善目標</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">完成生活現況盤點表，為六個面向各打一個分數（1–10）並寫下理由。接著花 30 分鐘設計你的理想日時間表，不需要完美，只需要誠實。</span>
+        <span class="act-time">作業時間：1 小時</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- L02 -->
+  <div class="lesson-block" id="l02">
+    <div class="lesson-header" onclick="toggleLesson('l02')">
+      <span class="lh-num">L02</span>
+      <div class="lh-info">
+        <div class="lh-title">晨間例程：掌控一天的開端</div>
+        <div class="lh-sub">Morning Routine · 40 min</div>
+      </div>
+      <div class="lh-toggle">展開 <i class="toggle-arrow">›</i></div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>一天的開始方式決定了這一天的基調。在你查看手機之前，在外界的需求湧入之前，晨間例程是你唯一能完全掌控的時段。許多高效能人士共同的特質，就是擁有一個穩定的晨間儀式。</p>
+        <p>本單元將帶你設計一套屬於自己的晨間例程——從 15 分鐘的極簡版本開始，逐步擴展到 60 分鐘的完整版本。重點不在於複製別人的晨間程序，而是找到真正讓你感到充電與清醒的活動組合。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>為什麼晨間例程比夜貓習慣更容易建立</li>
+          <li>晨間例程的四個核心元素：身體 / 心智 / 意圖設定 / 安靜時間</li>
+          <li>設計三個版本：15 分鐘 / 30 分鐘 / 60 分鐘</li>
+          <li>如何處理「不想起床」的阻力——睡眠與鬧鐘策略</li>
+          <li>前一晚準備：讓晨間例程更容易執行的環境設定</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">設計你的晨間例程三版本，並從本週開始執行 15 分鐘版本，連續七天。每天完成後簡短記錄感受（一句話即可），七天後評估哪些元素要保留、調整或刪除。</span>
+        <span class="act-time">作業時間：7 天試行</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- L03 -->
+  <div class="lesson-block" id="l03">
+    <div class="lesson-header" onclick="toggleLesson('l03')">
+      <span class="lh-num">L03</span>
+      <div class="lh-info">
+        <div class="lh-title">夜間例程：為明天做準備</div>
+        <div class="lh-sub">Evening Routine · 35 min</div>
+      </div>
+      <div class="lh-toggle">展開 <i class="toggle-arrow">›</i></div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>晨間例程決定了你如何開始一天，夜間例程則決定了你如何結束它——以及隔天早晨的品質。睡眠是人體最重要的恢復機制，而夜間例程的核心任務，就是幫助身心從工作模式切換到休息模式。</p>
+        <p>本單元聚焦於「數位宵禁」的設計、睡前準備的流程，以及如何透過隔日計畫讓大腦「下班」，真正從工作中抽離，進入深度睡眠。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>睡眠品質對認知功能的直接影響</li>
+          <li>數位宵禁：為什麼要在睡前 60 分鐘關螢幕</li>
+          <li>夜間例程的三個核心任務：整理 / 放鬆 / 準備</li>
+          <li>隔日計畫的快速執行（5 分鐘內完成）</li>
+          <li>睡眠環境優化：溫度、光線、噪音控制</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">設定一個「數位宵禁」鬧鐘，比預計就寢時間早 60 分鐘響起。這週開始在宵禁後只做：整理明日待辦、閱讀實體書、個人衛生三件事，並記錄睡眠品質變化。</span>
+        <span class="act-time">作業時間：7 天試行</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- L04 -->
+  <div class="lesson-block" id="l04">
+    <div class="lesson-header" onclick="toggleLesson('l04')">
+      <span class="lh-num">L04</span>
+      <div class="lh-info">
+        <div class="lh-title">習慣堆疊與觸發設計</div>
+        <div class="lh-sub">Habit Stacking · 40 min</div>
+      </div>
+      <div class="lh-toggle">展開 <i class="toggle-arrow">›</i></div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>習慣之所以難以建立，是因為我們試圖用意志力去驅動新行為，而不是借助既有習慣的慣性。習慣堆疊（Habit Stacking）是一種利用「現有習慣」作為觸發點，自然串接新習慣的方法。</p>
+        <p>公式很簡單：「在我做完 [現有習慣] 之後，我將做 [新習慣]。」這個方法的強大之處在於，它把新習慣嵌入已經自動化的行為序列中，大幅降低執行門檻。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>習慣迴路：提示 → 慣例 → 獎勵 的運作機制</li>
+          <li>習慣堆疊公式與實際應用範例</li>
+          <li>識別你生活中已有的「錨點習慣」</li>
+          <li>為新習慣設計最小可執行版本（2 分鐘法則）</li>
+          <li>習慣追蹤：用打勾紀錄建立連勝動力</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">列出三個你想建立的新習慣，為每個習慣找到一個「錨點習慣」，寫下完整的堆疊公式。從最小版本開始（每個新習慣不超過 2 分鐘），並用習慣追蹤表記錄執行狀況。</span>
+        <span class="act-time">作業時間：30 分鐘設計 + 持續追蹤</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- L05 -->
+  <div class="lesson-block" id="l05">
+    <div class="lesson-header" onclick="toggleLesson('l05')">
+      <span class="lh-num">L05</span>
+      <div class="lh-info">
+        <div class="lh-title">環境設計：讓空間幫你做決定</div>
+        <div class="lh-sub">Environment Design · 45 min</div>
+      </div>
+      <div class="lh-toggle">展開 <i class="toggle-arrow">›</i></div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>行為經濟學的研究一再證明：人的選擇在很大程度上受到環境的塑造，而非純粹的理性決策。我們以為自己有自由意志，但其實大多數時候，我們只是選了「最容易選的那個」。</p>
+        <p>環境設計的核心思想是：讓好的行為成為阻力最小的路徑，讓壞的行為增加摩擦力。不需要更強的意志力，只需要重新排列你的空間、工具與物品的位置。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>摩擦力原理：降低好習慣的執行門檻</li>
+          <li>視覺提示的力量：把想做的事放在眼睛看得到的地方</li>
+          <li>工作空間設計：書桌、椅子、光線、雜物清理</li>
+          <li>手機管理：放置位置、App 刪除、通知架構</li>
+          <li>廚房與飲食環境：讓健康食物成為預設選項</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">進行「環境審計」：走過你家和工作空間，找出三個讓你容易做壞選擇的地方（如手機放在床頭、垃圾食物放在桌上），以及三個可以讓好習慣更容易發生的環境調整。本週完成這六個改動。</span>
+        <span class="act-time">作業時間：1 小時執行</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- L06 -->
+  <div class="lesson-block" id="l06">
+    <div class="lesson-header" onclick="toggleLesson('l06')">
+      <span class="lh-num">L06</span>
+      <div class="lh-info">
+        <div class="lh-title">生活系統的維護與彈性</div>
+        <div class="lh-sub">System Resilience · 40 min</div>
+      </div>
+      <div class="lh-toggle">展開 <i class="toggle-arrow">›</i></div>
+    </div>
+    <div class="lesson-body">
+      <div class="lb-content">
+        <h4>// 單元說明</h4>
+        <p>任何系統都會遇到干擾——出差、生病、情緒低潮、家庭突發事件。許多人在系統第一次被打亂後就完全放棄，這不是意志力不夠，而是系統缺乏彈性設計。</p>
+        <p>本單元的核心概念是「不要讓完美成為良好的敵人」。學習如何設計一個有「最低維持版本」的系統，讓你在最糟糕的情況下也能執行，同時建立「系統重啟」的機制，在偏離軌道後快速回來。</p>
+      </div>
+      <div class="lb-points">
+        <h4>// 本節重點</h4>
+        <ul class="point-list">
+          <li>設計「緊急精簡版」例程：壞日子也能執行的最小版本</li>
+          <li>不連續原則：錯過一天不算失敗，連續錯過才是問題</li>
+          <li>系統重啟儀式：如何在中斷後快速回到軌道</li>
+          <li>季節性審視：每季檢視並調整生活系統</li>
+          <li>自我慈悲的重要性：放棄完美主義才能長期堅持</li>
+        </ul>
+      </div>
+      <div class="lb-action">
+        <span class="act-label">本節作業</span>
+        <span class="act-text">為你的晨間例程和夜間例程各設計一個「緊急精簡版」（不超過 5 分鐘）。寫下在什麼情況下你會切換到精簡版，以及如何判斷自己已經準備好回到完整版。</span>
+        <span class="act-time">作業時間：30 分鐘</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── UNIT NAV ─── -->
+  <div class="unit-nav">
+    <a href="unit-time.html" class="un-prev">
+      <span class="un-label">← 上一模組</span>
+      <div class="un-title">時間管理 · Module 01</div>
+    </a>
+    <a href="unit-reading.html" class="un-next">
+      <span class="un-label">下一模組 →</span>
+      <div class="un-title">閱讀管理 · Module 03</div>
+    </a>
+  </div>
+
+</div>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <span>個人管理學苑 &nbsp;·&nbsp; <span class="f-red">Module 02</span> &nbsp;·&nbsp; 生活管理</span>
+  <span>6 Lessons · 4h</span>
+</footer>
+
+<script>
+  function toggleLesson(id) {
+    const block = document.getElementById(id);
+    const isActive = block.classList.contains('active');
+    document.querySelectorAll('.lesson-block').forEach(b => b.classList.remove('active'));
+    if (!isActive) block.classList.add('active');
+  }
+</script>
+
+</body>
+</html>
